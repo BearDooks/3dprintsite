@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="js/firebaseConfig.js"></script>
+    <script src="js/functions.js"></script>
+</head>
+<body>
+    <div id="navbar-container"></div>
+    <div class="container mt-4">
+        <h1>User Dashboard</h1>
+        <button class="btn btn-primary mb-3" onclick="location.href='request-form.html'">Create New Request</button>
+        <table class="table" id="userRequestsTable">
+            <thead>
+                <tr>
+                    <th data-sort="id">ID</th>
+                    <th data-sort="requestName">Name</th>
+                    <th data-sort="dateAdded">Date Added</th>
+                    <th data-sort="status">Status</th>
+                    <th data-sort="requestDateNeeded">Date Needed</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="userRequestsTableBody">
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation">
+            <ul class="pagination" id="pagination">
+            </ul>
+        </nav>
+    </div>
+
+    <script src="js/loadNavbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            auth.onAuthStateChanged(async function(user) {
+                if (user) {
+                    await loadUserContent(user.uid);
+                } else {
+                    document.body.innerHTML = '<p>Please log in to view this page.</p>';
+                }
+            });
+        });
+
+        async function loadUserContent(userId) {
+            const requestsTableBody = document.getElementById('userRequestsTableBody');
+            const pagination = document.getElementById('pagination');
+            let userRequests = await loadUserRequests(userId);
+
+            const requestsPerPage = 10;
+            let currentPage = 1;
+
+            function displayRequests(requests, page) {
+                const startIndex = (page - 1) * requestsPerPage;
+                const endIndex = startIndex + requestsPerPage;
+                const requestsToDisplay = requests.slice(startIndex, endIndex);
+
+                requestsTableBody.innerHTML = '';
+
+                requestsToDisplay.forEach(request => {
+                    const badgeClass = getStatusBadgeClass(request.status); // Get badge class
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${request.id}</td>
+                        <td>${request.requestName}</td>
+                        <td>${request.dateAdded ? request.dateAdded.toDate().toLocaleDateString() : 'N/A'}</td>
+                        <td><span class="badge ${badgeClass}">${request.status}</span></td>
+                        <td>${request.requestDateNeeded || 'N/A'}</td>
+                        <td><a href="request-details.html?id=${request.id}">View Details</a></td>
+                    `;
+                    requestsTableBody.appendChild(row);
+                });
+            }
+
+            function displayPagination(requests) {
+                const totalPages = Math.ceil(requests.length / requestsPerPage);
+                pagination.innerHTML = '';
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('page-item');
+                    if (i === currentPage) {
+                        listItem.classList.add('active');
+                    }
+                    const link = document.createElement('a');
+                    link.classList.add('page-link');
+                    link.href = '#';
+                    link.textContent = i;
+                    link.addEventListener('click', () => {
+                        currentPage = i;
+                        displayRequests(requests, currentPage);
+                        displayPagination(requests);
+                    });
+                    listItem.appendChild(link);
+                    pagination.appendChild(listItem);
+                }
+            }
+
+            displayRequests(userRequests, currentPage);
+            displayPagination(userRequests);
+
+            document.querySelectorAll('#userRequestsTable th[data-sort]').forEach(header => {
+                header.addEventListener('click', () => {
+                    const sortBy = header.getAttribute('data-sort');
+                    const ascending = header.classList.contains('asc') ? false : true;
+                    userRequests = sortRequests(userRequests, sortBy, ascending);
+                    displayRequests(userRequests, currentPage);
+                    displayPagination(userRequests);
+
+                    document.querySelectorAll('#userRequestsTable th[data-sort]').forEach(th => {
+                        th.classList.remove('asc', 'desc');
+                    });
+                    header.classList.add(ascending ? 'asc' : 'desc');
+                });
+            });
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
