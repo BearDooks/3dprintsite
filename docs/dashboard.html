@@ -15,7 +15,7 @@
     <div id="navbar-container"></div>
     <div class="container mt-4">
         <h1>User Dashboard</h1>
-        <button class="btn btn-primary mb-3" onclick="location.href='request-form.html'">Create New Request</button>
+        <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addRequestModal">Create New Request</button>
         <table class="table" id="userRequestsTable">
             <thead>
                 <tr>
@@ -34,6 +34,45 @@
             <ul class="pagination" id="pagination">
             </ul>
         </nav>
+    </div>
+
+    <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="addRequestModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addRequestModalLabel">Create New Request</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="requestName">Request Name</label>
+                        <input type="text" class="form-control" id="requestName">
+                    </div>
+                    <div class="form-group">
+                        <label for="requestLink">3D Print Link</label>
+                        <input type="text" class="form-control" id="requestLink">
+                    </div>
+                    <div class="form-group">
+                        <label for="requestNotes">Notes</label>
+                        <textarea class="form-control" id="requestNotes"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="requestDateNeeded">Date Needed</label>
+                        <input type="date" class="form-control" id="requestDateNeeded">
+                    </div>
+                    <div class="form-group">
+                        <label for="requestFile">Upload File (Optional) - COMING SOON!</label>
+                        <input type="file" class="form-control-file" id="requestFile" disabled>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="addRequestButton">Add</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="js/loadNavbar.js"></script>
@@ -64,7 +103,7 @@
                 requestsTableBody.innerHTML = '';
 
                 requestsToDisplay.forEach(request => {
-                    const badgeClass = getStatusBadgeClass(request.status); // Get badge class
+                    const badgeClass = getStatusBadgeClass(request.status);
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${request.id}</td>
@@ -117,6 +156,20 @@
                         th.classList.remove('asc', 'desc');
                     });
                     header.classList.add(ascending ? 'asc' : 'desc');
+                });
+            });
+
+            $('#addRequestModal').on('shown.bs.modal', function (e) {
+                document.getElementById('addRequestButton').addEventListener('click', async () => {
+                    const success = await addNewRequest();
+                    if (success) {
+                        $('#addRequestModal').modal('hide');
+                        userRequests = await loadUserRequests(auth.currentUser.uid);
+                        displayRequests(userRequests, currentPage);
+                        displayPagination(userRequests);
+                    } else {
+                        alert("There was an error adding your request. Please try again.");
+                    }
                 });
             });
         }

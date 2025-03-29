@@ -47,19 +47,12 @@
             }
         });
 
-        function loginUser() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    window.location.href = 'dashboard.html';
-                })
-                .catch((error) => {
-                    const errorMessage = error.message;
-                    loginError.textContent = errorMessage; // Display login error message
-                });
-        }
+        document.getElementById('password').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent default form submission
+                loginUser(); // Call your login function
+            }
+        });
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
