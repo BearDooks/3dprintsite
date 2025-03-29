@@ -29,6 +29,7 @@ function logout() {
     auth.signOut().catch(function (error) {
         console.error("Logout failed:", error);
     });
+    window.location.href = 'index.html';
 }
 
 // Function to read data from Firebase Realtime Database
