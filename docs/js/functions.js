@@ -1,6 +1,21 @@
+import { auth, db } from './firebase-config.js'; // Import auth and db
+
+export function authStateObserver() {
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            if(window.location.pathname.endsWith('login.html')){
+                window.location.href = "dashboard.html";
+            }
+        } else {
+            // User is signed out.
+            console.log('User is signed out.');
+        }
+    });
+}
+
 $(document).ready(function() {
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    //const auth = firebase.auth();
+    //const db = firebase.firestore();
     const adminUID = "lk0SSxWRWKU1ST9faUiZcuDUDh62"; // Admin UID
 
     let currentPage = 1;
@@ -15,6 +30,8 @@ $(document).ready(function() {
 
     let authStateChecked = false; // Flag to track auth state check
     let requestsAlreadyFetched = false; // Add this flag
+
+    authStateObserver();
 
     $("#dark-mode-toggle").click(function() {
         $("body").toggleClass("dark-mode");
@@ -99,27 +116,52 @@ $(document).ready(function() {
             };
             $("#new-request-form").submit(function(event) {
                 event.preventDefault();
+                console.log("Form submission triggered.");
+            
                 const requestName = $("#requestName").val();
                 const requestLink = $("#requestLink").val();
                 const requestNotes = $("#requestNotes").val();
                 const requestDateNeeded = $("#requestDateNeeded").val();
-
-                db.collection("requests").add({
-                    userId: user.uid,
+            
+                console.log("Submitting request to Firestore:", {
                     requestName: requestName,
                     requestLink: requestLink,
                     requestNotes: requestNotes,
-                    requestDateNeeded: requestDateNeeded,
-                    status: "Submitted",
-                    dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
-                }).then(() => {
-                    showToast("Request submitted successfully!");
-                    modal.css("display", "none");
-                    $("#new-request-form")[0].reset();
-                    fetchUserRequests(user.uid);
-                }).catch((error) => {
-                    showToast("Error submitting request. Please try again.");
+                    requestDateNeeded: requestDateNeeded
                 });
+            
+                const submitButton = $(this).find('button[type="submit"]');
+                submitButton.prop('disabled', true); // Disable the button
+            
+                //const auth = firebase.auth();
+                //const db = firebase.firestore();
+            
+                if (auth.currentUser) {
+                    db.collection("requests").add({
+                        userId: auth.currentUser.uid,
+                        requestName: requestName,
+                        requestLink: requestLink,
+                        requestNotes: requestNotes,
+                        requestDateNeeded: requestDateNeeded,
+                        status: "Submitted",
+                        dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
+                    }).then(() => {
+                        console.log("Request submitted successfully.");
+                        showToast("Request submitted successfully!");
+                        $("#new-request-form")[0].reset();
+                        $("#new-request-modal").css("display", "none");
+                        fetchUserRequests(auth.currentUser.uid);
+                        submitButton.prop('disabled', false); // Re-enable the button
+                    }).catch((error) => {
+                        console.error("Error submitting request:", error);
+                        showToast("Error submitting request. Please try again.");
+                        submitButton.prop('disabled', false); // Re-enable the button
+                    });
+                } else {
+                    console.error("User not logged in.");
+                    showToast("User not logged in. Please log in and try again.");
+                    submitButton.prop('disabled', false); // Re-enable the button
+                }
             });
         } else if (!user && window.location.pathname.includes("dashboard.html")) {
             window.location.href = "login.html";
