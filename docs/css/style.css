@@ -15,6 +15,7 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
   background-color: var(--body-bg);
   color: var(--text-color);
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 /* ==========================================================================
@@ -486,8 +487,14 @@ select {
 
 .account-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr; /* Single column by default (for mobile) */
   gap: 1rem;
+}
+
+@media (min-width: 600px) { /* Adjust breakpoint as needed */
+  .account-grid {
+      grid-template-columns: 1fr 1fr; /* Two columns on larger screens */
+  }
 }
 
 .account-item {
