@@ -14,8 +14,6 @@ export function authStateObserver() {
 }
 
 $(document).ready(function() {
-    //const auth = firebase.auth();
-    //const db = firebase.firestore();
     const adminUID = "lk0SSxWRWKU1ST9faUiZcuDUDh62"; // Admin UID
 
     let currentPage = 1;
@@ -24,16 +22,12 @@ $(document).ready(function() {
     let lastVisible = null;
     let totalDocuments = 0;
 
-    let userCurrentPage = 1;
-    let userItemsPerPage = 10;
-    let userAllRequests = [];
-
     let authStateChecked = false; // Flag to track auth state check
     let requestsAlreadyFetched = false; // Add this flag
 
     authStateObserver();
 
-    $("#dark-mode-toggle").click(function() {
+    $("body").on("click", "#dark-mode-toggle", function() {
         $("body").toggleClass("dark-mode");
         const icon = $("#dark-mode-icon");
         if ($("body").hasClass("dark-mode")) {
@@ -94,127 +88,6 @@ $(document).ready(function() {
 
                 window.location.href = "login.html";
             }
-        }
-
-        if (user && window.location.pathname.includes("dashboard.html")) {
-            $("#user-display").text("Logged in as: " + user.email);
-            fetchUserRequests(user.uid);
-
-            // Modal functionality for the new request button
-            const modal = $("#new-request-modal");
-            const span = $("#new-request-modal .close")[0];
-            $("#new-request-button").click(function() {
-                modal.css("display", "block");
-            });
-            span.onclick = function() {
-                modal.css("display", "none");
-            };
-            window.onclick = function(event) {
-                if (event.target == modal[0]) {
-                    modal.css("display", "none");
-                }
-            };
-            $("#new-request-form").submit(function(event) {
-                event.preventDefault();
-                console.log("Form submission triggered.");
-            
-                const requestName = $("#requestName").val();
-                const requestLink = $("#requestLink").val();
-                const requestNotes = $("#requestNotes").val();
-                const requestDateNeeded = $("#requestDateNeeded").val();
-            
-                console.log("Submitting request to Firestore:", {
-                    requestName: requestName,
-                    requestLink: requestLink,
-                    requestNotes: requestNotes,
-                    requestDateNeeded: requestDateNeeded
-                });
-            
-                const submitButton = $(this).find('button[type="submit"]');
-                submitButton.prop('disabled', true); // Disable the button
-            
-                //const auth = firebase.auth();
-                //const db = firebase.firestore();
-            
-                if (auth.currentUser) {
-                    db.collection("requests").add({
-                        userId: auth.currentUser.uid,
-                        requestName: requestName,
-                        requestLink: requestLink,
-                        requestNotes: requestNotes,
-                        requestDateNeeded: requestDateNeeded,
-                        status: "Submitted",
-                        dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
-                    }).then(() => {
-                        console.log("Request submitted successfully.");
-                        showToast("Request submitted successfully!");
-                        $("#new-request-form")[0].reset();
-                        $("#new-request-modal").css("display", "none");
-                        fetchUserRequests(auth.currentUser.uid);
-                        submitButton.prop('disabled', false); // Re-enable the button
-                    }).catch((error) => {
-                        console.error("Error submitting request:", error);
-                        showToast("Error submitting request. Please try again.");
-                        submitButton.prop('disabled', false); // Re-enable the button
-                    });
-                } else {
-                    console.error("User not logged in.");
-                    showToast("User not logged in. Please log in and try again.");
-                    submitButton.prop('disabled', false); // Re-enable the button
-                }
-            });
-        } else if (!user && window.location.pathname.includes("dashboard.html")) {
-            window.location.href = "login.html";
-        }
-
-        // Display user account details on account.html
-        if (user && window.location.pathname.includes("account.html")) {
-            $("#user-email").text(user.email);
-            $("#user-uid").text(user.uid);
-            $("#user-email-verified").text(user.emailVerified ? "Yes" : "No");
-            $("#user-creation-time").text(new Date(user.metadata.creationTime).toLocaleString());
-            $("#user-last-sign-in-time").text(new Date(user.metadata.lastSignInTime).toLocaleString());
-            $("#user-display-name").text(user.displayName || "Not set");
-
-            if (!user.emailVerified) {
-                $("#verify-email-button").show();
-            }
-
-            $("#verify-email-button").off('click').on('click', function() { // Remove prior event handlers, and add a single one.
-                user.sendEmailVerification()
-                    .then(function() {
-                        alert("Verification email sent. Please check your inbox.");
-                    })
-                    .catch(function(error) {
-                        alert("Failed to send verification email: " + error.message);
-                    });
-            });
-
-            // Modal functionality
-            const modal = $("#edit-modal");
-            const span = $("#edit-modal .close")[0];
-            $("#edit-display-name").click(function() {
-                modal.css("display", "block");
-            });
-            span.onclick = function() {
-                modal.css("display", "none");
-            };
-            window.onclick = function(event) {
-                if (event.target == modal[0]) {
-                    modal.css("display", "none");
-                }
-            };
-            $("#save-display-name").click(function() {
-                const newDisplayName = $("#new-display-name").val();
-                user.updateProfile({
-                    displayName: newDisplayName
-                }).then(() => {
-                    $("#user-display-name").text(newDisplayName);
-                    modal.css("display", "none");
-                }).catch((error) => {
-                    alert(error.message);
-                });
-            });
         }
 
         function displayRequestDetails(request, isAdmin = false, isUserDashboard = false) {
@@ -421,56 +294,6 @@ $(document).ready(function() {
             });
     });
 
-    function fetchUserRequests(userId) {
-        db.collection("requests")
-            .where("userId", "==", userId)
-            .get()
-            .then((querySnapshot) => {
-                userAllRequests = [];
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    data.id = doc.id;
-                    userAllRequests.push(data);
-                });
-                displayUserRequests();
-            })
-            .catch((error) => {
-                alert("Error getting requests.");
-            });
-    }
-
-    function displayUserRequests() {
-        const startIndex = (userCurrentPage - 1) * userItemsPerPage;
-        const endIndex = startIndex + parseInt(userItemsPerPage);
-        const pageRequests = userAllRequests.slice(startIndex, endIndex);
-
-        populateRequestsTable(pageRequests);
-
-        const totalPages = Math.ceil(userAllRequests.length / userItemsPerPage);
-        $("#userPageInfo").text(`Page ${userCurrentPage} of ${totalPages}`);
-
-        $("#userPrevPage").prop("disabled", userCurrentPage === 1);
-        $("#userNextPage").prop("disabled", userCurrentPage === totalPages);
-    }
-
-    function populateRequestsTable(requests) {
-        const tableBody = $("#requests-table tbody");
-        tableBody.empty(); // Clear existing rows
-
-        requests.forEach((request) => {
-            const row = `
-                <tr>
-                    <td>${request.requestName || ""}</td>
-                    <td>${request.status || ""}</td>
-                    <td>${request.dateAdded ? request.dateAdded.toDate().toLocaleString() : ""}</td>
-                    <td>${request.requestDateNeeded || ""}</td>
-                    <td><a href="request-details.html?id=${request.id}">View Details</a></td>
-                </tr>
-            `;
-            tableBody.append(row);
-        });
-    }
-
     function fetchAllRequests(paginate = false, newItemsPerPage = itemsPerPage) {
         console.log("fetchAllRequests called. paginate:", paginate, "newItemsPerPage:", newItemsPerPage); // Log function call
 
@@ -592,57 +415,6 @@ $(document).ready(function() {
             });
     });
 
-    // Pagination controls
-    $("#prevPage").click(function() {
-        console.log("prevPage clicked. currentPage:", currentPage); // Log click event
-
-        if (currentPage > 1) {
-            currentPage--;
-            lastVisible = null; // Reset lastVisible when going to previous page
-            fetchAllRequests(false).then(()=>{displayRequests()}).catch((error)=>{alert(error)}); // Fetch from the beginning
-        }
-    });
-
-    $("#nextPage").click(function() {
-        console.log("nextPage clicked. currentPage:", currentPage, "allRequests.length:", allRequests.length, "itemsPerPage:", itemsPerPage); // Log click event
-
-        if (allRequests.length === itemsPerPage) { // Only paginate if we have a full page
-            currentPage++;
-            fetchAllRequests(true).then(()=>{displayRequests()}).catch((error)=>{alert(error)}); // Paginate from the last document
-        }
-    });
-
-    $("#itemsPerPage").change(function() {
-        userItemsPerPage = parseInt($(this).val());
-        console.log("itemsPerPage changed. userItemsPerPage:", userItemsPerPage); // Log change event
-
-        currentPage = 1;
-        lastVisible = null; // Reset pagination
-        fetchAllRequests(false).then(()=>{displayRequests()}).catch((error)=>{alert(error)}); // Fetch from the beginning
-    });
-
-    // User Pagination controls
-    $("#userPrevPage").click(function() {
-        if (userCurrentPage > 1) {
-            userCurrentPage--;
-            displayUserRequests();
-        }
-    });
-
-    $("#userNextPage").click(function() {
-        const totalPages = Math.ceil(userAllRequests.length / userItemsPerPage);
-        if (userCurrentPage < totalPages) {
-            userCurrentPage++;
-            displayUserRequests();
-        }
-    });
-
-    $("#userItemsPerPage").change(function() {
-        userItemsPerPage = parseInt($(this).val());
-        userCurrentPage = 1;
-        displayUserRequests();
-    });
-
     function showToast(message) {
         const toast = $("#toast-message");
         toast.text(message);
@@ -651,17 +423,4 @@ $(document).ready(function() {
             toast.fadeOut(400);
         }, 3000); // Hide after 3 seconds
     }
-    $(document).on('click', '.items-per-page-btn', function() {
-        userItemsPerPage = parseInt($(this).data('items'));
-        userCurrentPage = 1;
-        displayUserRequests();
-
-        // Update active button
-        $('#items-per-page-buttons .items-per-page-btn').removeClass('active'); // **Improved selector**
-        $(this).addClass('active');
-    });
-
-    // Initialize active button
-    userItemsPerPage = 10; // Default items per page
-    $('#items-per-page-buttons .items-per-page-btn[data-items="10"]').addClass('active'); // **Improved selector**
 });
