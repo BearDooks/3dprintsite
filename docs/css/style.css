@@ -3,6 +3,11 @@
    ========================================================================== */
 
 /* Reset some default styles */
+
+* {
+  box-sizing: border-box;
+}
+
 body, h1, h2, p, ul, li {
   margin: 0;
   padding: 0;
@@ -68,6 +73,8 @@ body.dark-mode {
   font-weight: bold;
   text-decoration: none;
   color: white;
+  white-space: normal; /* Allow text to wrap */
+  word-wrap: break-word; /* Force words to break if needed */
 }
 
 .navbar-menu {
@@ -89,19 +96,63 @@ body.dark-mode {
   color: #bbb;
 }
 
+#dark-mode-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 1.2em;
+}
+
+@media (max-width: 600px) {
+  .dropbtn,
+  #dark-mode-toggle {
+      font-size: 1em; /* Reduce font size */
+      padding: 0.2rem; /* Reduce padding */
+  }
+
+  .navbar-logo {
+      font-size: 1.2rem;
+  }
+
+  .navbar-container {
+    padding: 0.5rem 0; /* Reduce padding */
+}
+}
+
 /* ==========================================================================
  4. Main Content Styles
  ========================================================================== */
 
-.main-content {
+ .main-content {
   width: 90%;
-  max-width: 1200px;
   margin: 2rem auto;
-  padding: 2rem;
+  padding: 5vw; /* Original padding */
   background-color: var(--surface-color);
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
+}
+
+@media (max-width: 600px) {
+  .main-content {
+      width: 100%;
+      padding: 3vw; /* Reduced padding for smaller screens */
+      margin: 1rem auto;
+  }
+
+  .main-content h1 {
+      font-size: 1.8rem;
+  }
+  .main-content p {
+      font-size: 1rem;
+  }
+}
+
+@media (max-width: 320px) { /* Extra small screens */
+  .main-content {
+      padding: 10px; /* Use fixed padding for very small screens */
+  }
 }
 
 .main-content h1 {
