@@ -1,44 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>3D Print Request</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuck's 3D Print Request Site</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="js/firebaseConfig.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/functions.js"></script>
 </head>
 <body>
     <div id="navbar-container"></div>
-
-    <div class="container">
-        <h1>Chuck's 3D Print Request Site</h1>
-        <div id="authStatus"></div>
+    <div class="main-content">
+        <h1>Welcome to Chuck's 3D Print Requests</h1>
+        <p>Get your custom 3D prints made with ease. We offer high-quality prints at competitive prices.</p>
+        <a href="login.html" class="cta-button">Login/Request a Print</a>
     </div>
-
-    <script src="js/loadNavbar.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        const authStatus = document.getElementById('authStatus');
-
-        // Page-specific JavaScript
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof auth !== 'undefined') {
-                auth.onAuthStateChanged(function (user) {
-                    if (user) {
-                        authStatus.innerHTML = `<p>Logged in as: ${user.email || 'Anonymous'}</p>`;
-                    } else {
-                        authStatus.innerHTML = `<p>Not logged in.</p>`;
-                    }
-                });
-            } else {
-                console.error("Firebase Auth not loaded. Please check firebaseConfig.js");
-            }
+        $(function() {
+            $("#navbar-container").load("navbar.html");
         });
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

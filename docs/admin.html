@@ -1,63 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="js/firebaseConfig.js"></script>
-    <script src="js/functions.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div id="navbar-container"></div>
-    <div class="container mt-4">
+    <div class="main-content">
         <h1>Admin Dashboard</h1>
-        <div class="table-responsive">
-            <table class="table" id="allRequestsTable">
-                <thead>
-                    <tr>
-                        <th data-sort="id">ID</th>
-                        <th data-sort="requestName">Name</th>
-                        <th data-sort="dateAdded">Date Added</th>
-                        <th data-sort="status">Status</th>
-                        <th data-sort="requestDateNeeded">Date Needed</th>
-                        <th data-sort="userId">User ID</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="allRequestsTableBody">
-                </tbody>
-            </table>
+        <p id="admin-user-display"></p>
+        <h2>All Requests</h2>
+        <label for="adminItemsPerPage">Items per page:</label>
+        <div id="items-per-page-buttons">
+            <button class="items-per-page-btn" data-items="10">10</button>
+            <button class="items-per-page-btn" data-items="20">20</button>
+            <button class="items-per-page-btn" data-items="50">50</button>
+            <button class="items-per-page-btn" data-items="100">100</button>
         </div>
-        <nav aria-label="Page navigation">
-            <ul class="pagination" id="pagination">
-            </ul>
-        </nav>
+        <table id="admin-requests-table">
+            <thead>
+                <tr>
+                    <th>Request Name</th>
+                    <th>Request Link</th>
+                    <th>Request Notes</th>
+                    <th>Status</th>
+                    <th>Date Added</th>
+                    <th>Admin Notes</th>
+                    <th>Request Date Needed</th>
+                    <th>User ID</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <div id="adminPagination">
+            <button id="adminPrevPage">Previous</button>  <span id="adminPageInfo">Page 1</span>      <button id="adminNextPage">Next</button>   </div>
     </div>
-
-    <script src="js/loadNavbar.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            auth.onAuthStateChanged(async function(user) {
-                if (user) {
-                    const isAdmin = await checkAdmin(user.uid);
-                    if (isAdmin) {
-                        await loadAdminContent();
-                        setupTableSorting(); // Call setupTableSorting after content is loaded
-                    } else {
-                        document.body.innerHTML = '<p>You do not have permission to view this page.</p>';
-                    }
-                } else {
-                    document.body.innerHTML = '<p>Please log in to view this page.</p>';
-                }
-            });
+        $(function() {
+            $("#navbar-container").load("navbar.html");
         });
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="js/functions.js"></script>
 </body>
 </html>

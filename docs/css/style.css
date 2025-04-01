@@ -1,224 +1,632 @@
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #1e293b;
-  color: #d1d5db;
-}
+/* ==========================================================================
+   1. Reset and Base Styles
+   ========================================================================== */
 
-.container {
-  background-color: #374151;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  margin-top: 50px;
-}
-
-h1,
-#navbar-container .navbar-brand {
-  color: #60a5fa;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-#navbar-container .navbar-brand {
-  font-size: 2rem;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-}
-
-#navbar-container .nav-item.dropdown .fas.fa-user {
-  color: #60a5fa;
-}
-
-#navbar-container .nav-item.dropdown .nav-link.dropdown-toggle::after {
-  border-top-color: #60a5fa;
-}
-
-#dataDisplay {
-  background-color: #4b5563;
-  padding: 20px;
-  border-radius: 5px;
-  overflow-x: auto;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 14px;
-  color: #9ca3af;
-}
-
-#dataDisplay pre {
+/* Reset some default styles */
+body, h1, h2, p, ul, li {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.text-muted {
-  text-align: center;
-  color: #6b7280;
+body {
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: var(--body-bg);
+  color: var(--text-color);
 }
 
-#navbar-container {
-  background-color: #2d3748;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+/* ==========================================================================
+ 2. Color Variables (Light and Dark Modes)
+ ========================================================================== */
+
+:root {
+  /* Light Mode Colors */
+  --body-bg: #F8F8FF;
+  --text-color: #2F4F4F;
+  --primary-color: #007BFF;
+  --secondary-color: #FF6347;
+  --accent-color: #20B2AA;
+  --surface-color: white;
+  --border-color: #ddd;
 }
 
-/* Override Bootstrap's default navbar styles */
+body.dark-mode {
+  /* Dark Mode Colors */
+  --body-bg: #121212;
+  --text-color: #FFFFFF;
+  --primary-color: #6495ED;
+  --secondary-color: #03DAC6;
+  --accent-color: #00CED1;
+  --surface-color: #1E1E1E;
+  --border-color: #333;
+}
+
+/* ==========================================================================
+ 3. Navigation Bar Styles
+ ========================================================================== */
+
 .navbar {
-  background-color: #2d3748 !important; /* Force the background color */
-  padding: 1rem 2rem;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem 0;
+}
+
+.navbar-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.navbar-nav {
-  list-style: none;
-  display: flex;
-  align-items: center;
-  margin: 0;
-  padding: 0;
+.navbar-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
 }
 
-.nav-item {
+.navbar-menu {
+  list-style: none;
+  display: flex;
+}
+
+.navbar-item {
   margin-left: 1.5rem;
 }
 
-.nav-link {
+.navbar-link {
   text-decoration: none;
-  color: #d1d5db;
-  font-weight: 500;
+  color: white;
   transition: color 0.3s ease;
 }
 
-.nav-link:hover {
-  color: #60a5fa;
+.navbar-link:hover {
+  color: #bbb;
 }
 
-/* User Dropdown Styles */
-#userDropdownContainer {
+/* ==========================================================================
+ 4. Main Content Styles
+ ========================================================================== */
+
+.main-content {
+  width: 90%;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--surface-color);
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.main-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+
+.main-content p {
+  font-size: 1.1rem;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+}
+
+.main-content .cta-button {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.main-content .cta-button:hover {
+  background-color: #0056b3;
+}
+
+/* ==========================================================================
+ 5. Dropdown Styles
+ ========================================================================== */
+
+.dropdown {
   position: relative;
   display: inline-block;
 }
 
-.user-dropdown-button {
+.dropbtn {
   background-color: transparent;
+  color: white;
+  padding: 0.5rem;
+  font-size: 1rem;
   border: none;
-  padding: 0;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  color: #d1d5db;
-  font-weight: 500;
 }
 
-.user-dropdown-button img {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  margin-right: 0.5rem;
-}
-
-.user-dropdown-content {
+.dropdown-content {
   display: none;
   position: absolute;
-  background-color: #4b5563;
+  background-color: var(--surface-color);
   min-width: 160px;
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
   right: 0;
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
-.user-dropdown-content a {
-  color: #d1d5db;
+.dropdown-content a {
+  color: var(--text-color);
   padding: 12px 16px;
   text-decoration: none;
   display: block;
   transition: background-color 0.3s ease;
+  border-radius: 8px;
 }
 
-.user-dropdown-content a:hover {
-  background-color: #6b7280;
+.dropdown-content a:hover {
+  background-color: #ddd;
+  border-radius: 8px;
 }
 
-/* Responsive adjustments */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* ==========================================================================
+ 6. Modal Styles
+ ========================================================================== */
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: var(--surface-color);
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  width: 80%;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.close {
+  color: var(--text-color);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Modern Form Group Styling (Improved with Grid) */
+#new-request-form {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column on small screens */
+  gap: 1.5rem;
+}
+
+@media (min-width: 600px) {
+  #new-request-form {
+      grid-template-columns: 1fr 1fr; /* Two columns on larger screens */
+  }
+
+  #new-request-form textarea {
+      grid-column: 1 / 3; /* Span both columns */
+  }
+
+  #new-request-form button[type="submit"] {
+      grid-column: 1 / 3; /* Span both columns */
+  }
+}
+
+.form-group {
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group textarea {
+  width: calc(100% - 12px);
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+  background-color: var(--surface-color);
+  color: var(--text-color);
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="date"]:focus,
+.form-group textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+/* Updated Modal Button Styling (Using existing cta-button) */
+.modal-content .cta-button {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: none;
+  cursor: pointer;
+}
+
+.modal-content .cta-button:hover {
+  background-color: #0056b3;
+}
+
+/* ==========================================================================
+ 7. Button Styles
+ ========================================================================== */
+
+#edit-display-name,
+#new-request-button,
+#verify-email-button,
+#userPrevPage, #userNextPage,
+.items-per-page-btn {
+  padding: 10px 15px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#edit-display-name {
+  margin-top: 10px;
+}
+
+#new-request-button {
+  margin-bottom: 20px;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+}
+
+#verify-email-button {
+  margin-top: 2rem;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+}
+
+#userPrevPage, #userNextPage, #adminPrevPage, #adminNextPage,
+.items-per-page-btn {
+    padding: 8px 16px;
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    margin: 5px;
+}
+
+#userPrevPage:disabled, #userNextPage:disabled, #adminPrevPage:disabled, #adminNextPage:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.items-per-page-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+#edit-display-name:hover,
+#new-request-button:hover,
+#verify-email-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+#userPrevPage:hover, #userNextPage:hover, #adminPrevPage:hover, #adminNextPage:hover,
+.items-per-page-btn:hover {
+    background-color: #ddd;
+}
+
+body.dark-mode #userPrevPage:hover, body.dark-mode #userNextPage:hover, body.dark-mode #adminPrevPage:hover, body.dark-mode #adminNextPage:hover,
+body.dark-mode .items-per-page-btn:hover {
+    background-color: #333;
+}
+
+/* ==========================================================================
+ 8. Toast Styles
+ ========================================================================== */
+
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+#toast-message {
+  background-color: #4CAF50;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  padding: 16px;
+  display: none;
+}
+
+/* ==========================================================================
+ 9. Table Styles
+ ========================================================================== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  background-color: var(--surface-color);
+}
+
+th, td {
+  border: 1px solid var(--border-color);
+  padding: 10px;
+  text-align: left;
+  word-wrap: break-word;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+body.dark-mode th {
+  background-color: #333;
+  color: white;
+}
+
+/* Responsive Table Styling */
 @media (max-width: 768px) {
-  .navbar-nav {
-      flex-direction: column;
-      align-items: flex-start;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      background-color: #2d3748;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-      display: flex;
-  }
-
-  .nav-item {
-      margin-left: 0;
-      margin-top: 0.5rem;
-      width: 100%;
-  }
-
-  .nav-link {
-      padding: 0.75rem 1rem;
+  table {
       display: block;
+      overflow-x: auto;
+      white-space: normal;
   }
 
-  .navbar-toggler {
-      border: none;
-      background: transparent;
-      cursor: pointer;
+  th, td {
+      display: table-cell;
+      padding: 8px;
+  }
+
+  th:last-child, td:last-child {
+      min-width: 120px;
   }
 }
 
-.navbar-toggler-icon {
-  width: 1.5em;
-  height: 1.5em;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(209, 213, 219, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+/* ==========================================================================
+ 10. Input and Select Styles
+ ========================================================================== */
+
+input[type="text"], input[type="email"], input[type="password"], input[type="date"], textarea, select {
+  width: calc(100% - 22px);
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+  background-color: var(--surface-color);
+  color: var(--text-color);
 }
 
-.show-mobile-nav {
-  display: block !important;
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="date"]:focus, textarea:focus, select:focus {
+  border-color: var(--primary-color);
+  outline: none;
 }
 
-body .container.mt-4 {
-  width: 100% !important;
+select {
+  padding: 8px 12px;
+  cursor: pointer;
 }
 
-body #allRequestsTable {
-  width: 100% !important;
-  color: #d1d5db;
+/* ==========================================================================
+ 11. Dark Mode Toggle
+ ========================================================================== */
+
+#dark-mode-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 1.2em;
 }
 
-body #pagination {
-  width: 100% !important;
-  justify-content: center !important;
+/* ==========================================================================
+ 12. Account Page Styles
+ ========================================================================== */
+
+.account-container {
+  width: 90%;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--surface-color);
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-th.sorted-asc::after,
-th.sorted-desc::after {
-  color: #60a5fa;
-  margin-left: 5px;
+.account-container h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
-body * {
-  color: #d1d5db;
+.account-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
-body h1,
-body h2,
-body h3,
-body h4,
-body h5,
-body h6 {
-  color: #60a5fa;
+.account-item {
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
 }
 
-body a {
-  color: #60a5fa;
+.account-item strong {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
-/* Specific rule for the login link */
-#loginNavItem .nav-link {
-  color: #60a5fa;
+/* ==========================================================================
+ 12. Details Page Styles
+ ========================================================================== */
+
+/* Request Details Grid */
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns */
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.details-grid div {
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background-color: var(--surface-color);
+}
+
+.details-grid strong {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+/* Details Buttons */
+.details-buttons {
+  display: flex;
+  justify-content: center; /* Center the buttons */
+  gap: 1rem;
+}
+
+/* Updated Button Styling (Using existing cta-button) */
+.details-buttons .cta-button {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: none;
+  cursor: pointer;
+}
+
+.details-buttons .cta-button:hover {
+  background-color: #0056b3;
+}
+
+
+
+
+
+.auth-container {
+  width: 90%;
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--surface-color);
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.auth-form {
+  margin-bottom: 2rem;
+}
+
+.auth-form h1, .auth-form h2 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.form-group input[type="email"],
+.form-group input[type="password"] {
+  width: calc(100% - 12px);
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+  background-color: var(--surface-color);
+  color: var(--text-color);
+}
+
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: none;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.cta-button:hover {
+  background-color: #0056b3;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
 }

@@ -1,81 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Details</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-    <script src="js/firebaseConfig.js"></script>
-    <script src="js/functions.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div id="navbar-container"></div>
-    <div class="container mt-4">
-        <h1 id="requestDetailsTitle">Request Details</h1>
-        <button class="btn btn-secondary mb-3" onclick="goBack()">Back to Dashboard</button>
-        <div id="requestDetailsContent">
-            <p>Loading request details...</p>
+    <div class="main-content">
+        <h1>Request Details</h1>
+        <div id="request-details" class="details-grid">
+            </div>
+        <div class="details-buttons">
+            <button id="cancel-request" class="cta-button">Cancel Request</button>
+            <button id="back-to-dashboard" class="cta-button">Back to Dashboard</button>
         </div>
-        <button id="cancelRequestButton" class="btn btn-danger mt-3" style="display: none;">Cancel Request</button>
     </div>
-
-    <script src="js/loadNavbar.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            const requestId = new URLSearchParams(window.location.search).get('id');
-            const requestDetailsContent = document.getElementById('requestDetailsContent');
-            const cancelButton = document.getElementById('cancelRequestButton');
-
-            console.log("auth object: ", auth); //Check the auth object.
-
-            if (requestId) {
-                auth.onAuthStateChanged(async function(user) {
-                    if (user) {
-                        console.log("User logged in (request-details):", user);
-                        try {
-                            const request = await getRequestDetails(requestId);
-                            const isAdmin = await checkAdmin(user.uid);
-
-                            console.log(`Permission check: request.userId=${request.userId}, user.uid=${user.uid}, isAdmin=${isAdmin}`);
-
-                            if (request.userId === user.uid || isAdmin) {
-                                displayRequestDetails(request, requestDetailsContent);
-
-                                if (request.status !== 'Completed' && request.status !== 'Cancelled') {
-                                    cancelButton.style.display = 'block';
-                                    cancelButton.addEventListener('click', async () => {
-                                        if (confirm('Are you sure you want to cancel this request?')) {
-                                            await cancelRequest(requestId);
-                                            const updatedRequest = await getRequestDetails(requestId);
-                                            displayRequestDetails(updatedRequest, requestDetailsContent);
-                                            cancelButton.style.display = 'none';
-                                        }
-                                    });
-                                }
-                            } else {
-                                requestDetailsContent.innerHTML = '<p>You do not have permission to view this request.</p>';
-                            }
-                        } catch (error) {
-                            requestDetailsContent.innerHTML = `<p>Error loading request details: ${error.message}</p>`;
-                        }
-                    } else {
-                        console.log("User not logged in (request-details).");
-                        requestDetailsContent.innerHTML = '<p>Please log in to view request details.</p>';
-                        return;
-                    }
-                });
-            } else {
-                requestDetailsContent.innerHTML = '<p>Request ID not provided.</p>';
-            }
+        $(function() {
+            $("#navbar-container").load("navbar.html");
         });
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="js/functions.js"></script>
 </body>
 </html>
