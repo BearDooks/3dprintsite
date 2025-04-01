@@ -1,71 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Details</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="js/firebaseConfig.js"></script>
-    <script src="js/functions.js"></script>
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div id="navbar-container"></div>
-    
-    <div class="container mt-4">
-        <h1 class="mb-4">Account Details</h1>
-        <div id="accountDetailsContent">
-            <p>Loading account details...</p>
-        </div>
-    </div>
-
-    <div class="modal fade" id="editDisplayNameModal" tabindex="-1" role="dialog" aria-labelledby="editDisplayNameModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editDisplayNameModalLabel">Edit Display Name</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="newDisplayNameInput">New Display Name</label>
-                        <input type="text" class="form-control" id="newDisplayNameInput">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="saveDisplayNameButton">Save Changes</button>
-                </div>
+    <div class="account-container">
+        <h1>Account Details</h1>
+        <div class="account-grid">
+            <div class="account-item">
+                <strong>Email:</strong>
+                <span id="user-email"></span>
+            </div>
+            <div class="account-item">
+                <strong>User ID:</strong>
+                <span id="user-uid"></span>
+            </div>
+            <div class="account-item">
+                <strong>Email Verified:</strong>
+                <span id="user-email-verified"></span>
+                <button id="verify-email-button" style="display: none;">Verify Email</button>
+            </div>
+            <div class="account-item">
+                <strong>Creation Time:</strong>
+                <span id="user-creation-time"></span>
+            </div>
+            <div class="account-item">
+                <strong>Last Sign In:</strong>
+                <span id="user-last-sign-in-time"></span>
+            </div>
+            <div class="account-item">
+                <strong>Display Name:</strong>
+                <span id="user-display-name"></span>
+                <button id="edit-display-name">Edit</button>
             </div>
         </div>
     </div>
 
-    <script src="js/loadNavbar.js"></script>
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Display Name</h2>
+            <input type="text" id="new-display-name" placeholder="New Display Name"><br><br>
+            <button id="save-display-name">Save</button>
+        </div>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            if (typeof auth !== 'undefined') {
-                auth.onAuthStateChanged(function(user) {
-                    if (user) {
-                        displayUserDetails(user);
-                        document.getElementById('editDisplayNameIcon').addEventListener('click', () => {
-                            document.getElementById('newDisplayNameInput').value = user.displayName || '';
-                            $('#editDisplayNameModal').modal('show');
-                        });
-                        document.getElementById('saveDisplayNameButton').addEventListener('click', updateDisplayName);
-                    } else {
-                        document.getElementById('accountDetailsContent').innerHTML = '<p>User not logged in.</p>';
-                    }
-                });
-            } else {
-                console.error("Firebase Auth not loaded.");
-            }
+        $(function() {
+            $("#navbar-container").load("navbar.html");
         });
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="js/functions.js"></script>
 </body>
 </html>

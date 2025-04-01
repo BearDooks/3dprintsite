@@ -1,181 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="js/firebaseConfig.js"></script>
-    <script src="js/functions.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div id="navbar-container"></div>
-    <div class="container mt-4">
+    <div class="main-content">
         <h1>User Dashboard</h1>
-        <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addRequestModal">Create New Request</button>
-        <table class="table" id="userRequestsTable">
-            <thead>
-                <tr>
-                    <th data-sort="id">ID</th>
-                    <th data-sort="requestName">Name</th>
-                    <th data-sort="dateAdded">Date Added</th>
-                    <th data-sort="status">Status</th>
-                    <th data-sort="requestDateNeeded">Date Needed</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="userRequestsTableBody">
-            </tbody>
-        </table>
-        <nav aria-label="Page navigation">
-            <ul class="pagination" id="pagination">
-            </ul>
-        </nav>
-    </div>
-
-    <div class="modal fade" id="addRequestModal" tabindex="-1" role="dialog" aria-labelledby="addRequestModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <p id="user-display"></p>
+        <button id="new-request-button">New Request</button>
+        <div id="new-request-modal" class="modal">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addRequestModalLabel">Create New Request</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
+                <span class="close">&times;</span>
+                <h2>New Request</h2>
+                <form id="new-request-form">
                     <div class="form-group">
-                        <label for="requestName">Request Name</label>
-                        <input type="text" class="form-control" id="requestName">
+                        <label for="requestName">Request Name:</label>
+                        <input type="text" id="requestName" name="requestName" required>
                     </div>
+        
                     <div class="form-group">
-                        <label for="requestLink">3D Print Link</label>
-                        <input type="text" class="form-control" id="requestLink">
+                        <label for="requestLink">Request Link:</label>
+                        <input type="text" id="requestLink" name="requestLink">
                     </div>
+        
                     <div class="form-group">
-                        <label for="requestNotes">Notes</label>
-                        <textarea class="form-control" id="requestNotes"></textarea>
+                        <label for="requestNotes">Request Notes:</label>
+                        <textarea id="requestNotes" name="requestNotes" rows="4"></textarea>
                     </div>
+        
                     <div class="form-group">
-                        <label for="requestDateNeeded">Date Needed</label>
-                        <input type="date" class="form-control" id="requestDateNeeded">
+                        <label for="requestDateNeeded">Request Date Needed:</label>
+                        <input type="date" id="requestDateNeeded" name="requestDateNeeded">
                     </div>
-                    <div class="form-group">
-                        <label for="requestFile">Upload File (Optional) - COMING SOON!</label>
-                        <input type="file" class="form-control-file" id="requestFile" disabled>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="addRequestButton">Add</button>
-                </div>
+        
+                    <button type="submit" class="cta-button">Submit Request</button>
+                </form>
             </div>
         </div>
+        <h2>Your Requests</h2>
+        <label for="userItemsPerPage">Items per page:</label>
+        <div id="items-per-page-buttons">
+            <button class="items-per-page-btn" data-items="10">10</button>
+            <button class="items-per-page-btn" data-items="20">20</button>
+            <button class="items-per-page-btn" data-items="50">50</button>
+            <button class="items-per-page-btn" data-items="100">100</button>
+        </div>
+        <table id="requests-table">
+            <thead>
+                <tr>
+                    <th>Request Name</th>
+                    <th>Status</th>
+                    <th>Date Added</th>
+                    <th>Request Date Needed</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <div id="userPagination">
+            <button id="userPrevPage">Previous</button>
+            <span id="userPageInfo">Page 1</span>
+            <button id="userNextPage">Next</button>
+        </div>
     </div>
-
-    <script src="js/loadNavbar.js"></script>
+    <div id="toast-message"></div>
     <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            auth.onAuthStateChanged(async function(user) {
-                if (user) {
-                    await loadUserContent(user.uid);
-                } else {
-                    document.body.innerHTML = '<p>Please log in to view this page.</p>';
-                }
-            });
+        $(function() {
+            $("#navbar-container").load("navbar.html");
         });
-
-        async function loadUserContent(userId) {
-            const requestsTableBody = document.getElementById('userRequestsTableBody');
-            const pagination = document.getElementById('pagination');
-            let userRequests = await loadUserRequests(userId);
-
-            const requestsPerPage = 10;
-            let currentPage = 1;
-
-            function displayRequests(requests, page) {
-                const startIndex = (page - 1) * requestsPerPage;
-                const endIndex = startIndex + requestsPerPage;
-                const requestsToDisplay = requests.slice(startIndex, endIndex);
-
-                requestsTableBody.innerHTML = '';
-
-                requestsToDisplay.forEach(request => {
-                    const badgeClass = getStatusBadgeClass(request.status);
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${request.id}</td>
-                        <td>${request.requestName}</td>
-                        <td>${request.dateAdded ? request.dateAdded.toDate().toLocaleDateString() : 'N/A'}</td>
-                        <td><span class="badge ${badgeClass}">${request.status}</span></td>
-                        <td>${request.requestDateNeeded || 'N/A'}</td>
-                        <td><a href="request-details.html?id=${request.id}">View Details</a></td>
-                    `;
-                    requestsTableBody.appendChild(row);
-                });
-            }
-
-            function displayPagination(requests) {
-                const totalPages = Math.ceil(requests.length / requestsPerPage);
-                pagination.innerHTML = '';
-
-                for (let i = 1; i <= totalPages; i++) {
-                    const listItem = document.createElement('li');
-                    listItem.classList.add('page-item');
-                    if (i === currentPage) {
-                        listItem.classList.add('active');
-                    }
-                    const link = document.createElement('a');
-                    link.classList.add('page-link');
-                    link.href = '#';
-                    link.textContent = i;
-                    link.addEventListener('click', () => {
-                        currentPage = i;
-                        displayRequests(requests, currentPage);
-                        displayPagination(requests);
-                    });
-                    listItem.appendChild(link);
-                    pagination.appendChild(listItem);
-                }
-            }
-
-            displayRequests(userRequests, currentPage);
-            displayPagination(userRequests);
-
-            document.querySelectorAll('#userRequestsTable th[data-sort]').forEach(header => {
-                header.addEventListener('click', () => {
-                    const sortBy = header.getAttribute('data-sort');
-                    const ascending = header.classList.contains('asc') ? false : true;
-                    userRequests = sortRequests(userRequests, sortBy, ascending);
-                    displayRequests(userRequests, currentPage);
-                    displayPagination(userRequests);
-
-                    document.querySelectorAll('#userRequestsTable th[data-sort]').forEach(th => {
-                        th.classList.remove('asc', 'desc');
-                    });
-                    header.classList.add(ascending ? 'asc' : 'desc');
-                });
-            });
-
-            $('#addRequestModal').on('shown.bs.modal', function (e) {
-                document.getElementById('addRequestButton').addEventListener('click', async () => {
-                    const success = await addNewRequest();
-                    if (success) {
-                        $('#addRequestModal').modal('hide');
-                        userRequests = await loadUserRequests(auth.currentUser.uid);
-                        displayRequests(userRequests, currentPage);
-                        displayPagination(userRequests);
-                    } else {
-                        alert("There was an error adding your request. Please try again.");
-                    }
-                });
-            });
-        }
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="js/functions.js"></script>
 </body>
 </html>

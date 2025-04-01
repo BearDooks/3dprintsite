@@ -1,125 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Request Details</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="js/firebaseConfig.js"></script>
-    <script src="js/functions.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div id="navbar-container"></div>
-    <div class="container mt-4">
+    <div class="main-content">
         <h1>Admin Request Details</h1>
-        <button class="btn btn-secondary mb-3" onclick="admingoBack()">Back to Admin Dashboard</button>
-        <div id="adminRequestDetailsContent">
-            <p>Loading request details...</p>
+        <div id="request-details">
         </div>
-        <div id="adminControls" style="display: none;">
-            <div class="form-group">
-                <label for="adminNotes">Admin Notes:</label>
-                <textarea class="form-control" id="adminNotes" rows="3"></textarea>
-            </div>
-            <button class="btn btn-primary" id="updateNotesButton">Update Notes</button>
+        <div>
+            <label for="adminNotes">Add Notes:</label><br>
+            <textarea id="adminNotes" name="adminNotes" rows="5" cols="50"></textarea><br><br>
+
+            <label for="status">Status:</label>
+            <select id="status" name="status">
+                <option value="Submitted">Submitted</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+            </select><br><br>
+
+            <button id="update-request">Update Request</button>
+            <button id="back-to-admin">Back to Admin</button>
         </div>
     </div>
-
-    <div class="modal" tabindex="-1" role="dialog" id="editStatusModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Status</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <select class="form-control" id="newStatusSelect">
-                        <option value="submitted">Submitted</option>
-                        <option value="processing">Processing</option>
-                        <option value="completed">Completed</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="saveStatusButton">Save changes</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="js/loadNavbar.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            const requestId = new URLSearchParams(window.location.search).get('id');
-            const adminRequestDetailsContent = document.getElementById('adminRequestDetailsContent');
-            const adminControls = document.getElementById('adminControls');
-            const editStatusModal = $('#editStatusModal');
-            const newStatusSelect = document.getElementById('newStatusSelect');
-            const saveStatusButton = document.getElementById('saveStatusButton');
-
-            console.log("admin-request-details auth object: ", auth);
-
-            if (requestId) {
-                auth.onAuthStateChanged(async function(user) {
-                    if (user) {
-                        console.log("admin-request-details: User logged in:", user);
-
-                        try {
-                            const isAdmin = await checkAdmin(user.uid);
-                            console.log("Check Admin Function: ", isAdmin);
-
-                            if (isAdmin) {
-                                const request = await getRequestDetails(requestId);
-                                displayAdminRequestDetails(request, adminRequestDetailsContent);
-
-                                adminControls.style.display = 'block';
-
-                                document.getElementById('editStatusIcon').addEventListener('click', () => {
-                                    newStatusSelect.value = request.status;
-                                    editStatusModal.modal('show');
-                                });
-
-                                saveStatusButton.addEventListener('click', () => {
-                                    updateRequestStatus(requestId, newStatusSelect.value).then(() => {
-                                        return getRequestDetails(requestId);
-                                    }).then(updatedRequest => {
-                                        displayAdminRequestDetails(updatedRequest, adminRequestDetailsContent);
-                                        editStatusModal.modal('hide');
-                                    });
-                                });
-
-                                document.getElementById('updateNotesButton').addEventListener('click', async () => {
-                                    await updateAdminNotes(requestId, document.getElementById('adminNotes').value);
-                                    const updatedRequest = await getRequestDetails(requestId);
-                                    displayAdminRequestDetails(updatedRequest, adminRequestDetailsContent);
-                                });
-
-                            } else {
-                                adminRequestDetailsContent.innerHTML = '<p>You do not have permission to view this page.</p>';
-                            }
-                        } catch (error) {
-                            adminRequestDetailsContent.innerHTML = `<p>Error loading request details: ${error.message}</p>`;
-                        }
-                    } else {
-                        console.log("admin-request-details: User not logged in.");
-                        adminRequestDetailsContent.innerHTML = '<p>Please log in to view request details.</p>';
-                        return;
-                    }
-                });
-            } else {
-                adminRequestDetailsContent.innerHTML = '<p>Request ID not provided.</p>';
-            }
+        $(function() {
+            $("#navbar-container").load("navbar.html");
         });
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="js/functions.js"></script>
 </body>
 </html>
