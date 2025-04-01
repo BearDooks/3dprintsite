@@ -16,9 +16,10 @@
     <div id="navbar-container"></div>
     <div class="main-content">
         <h1>Admin Request Details</h1>
-        <div id="request-details">
-        </div>
-        <div>
+        <div id="request-details" class="details-grid">
+            </div>
+
+        <div class="admin-details-form">
             <label for="adminNotes">Add Notes:</label><br>
             <textarea id="adminNotes" name="adminNotes" rows="5" cols="50"></textarea><br><br>
 
@@ -30,8 +31,8 @@
                 <option value="Cancelled">Cancelled</option>
             </select><br><br>
 
-            <button id="update-request">Update Request</button>
-            <button id="back-to-admin">Back to Admin</button>
+            <button id="update-request" class="cta-button">Update Request</button>
+            <button id="back-to-admin" class="cta-button">Back to Admin</button>
         </div>
     </div>
     <script>

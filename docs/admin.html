@@ -11,12 +11,33 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/functions.js"></script>
+    <script type="module" src="js/admin.js"></script>
 </head>
 <body>
     <div id="navbar-container"></div>
     <div class="main-content">
         <h1>Admin Dashboard</h1>
         <p id="admin-user-display"></p>
+
+        <div class="stats-container">
+            <div class="stats-box">
+                <h3>Submitted</h3>
+                <p id="submitted-count">0</p>
+            </div>
+            <div class="stats-box">
+                <h3>In Progress</h3>
+                <p id="in-progress-count">0</p>
+            </div>
+            <div class="stats-box">
+                <h3>Completed</h3>
+                <p id="completed-count">0</p>
+            </div>
+            <div class="stats-box">
+                <h3>Cancelled</h3>
+                <p id="cancelled-count">0</p>
+            </div>
+        </div>
+
         <h2>All Requests</h2>
         <label for="adminItemsPerPage">Items per page:</label>
         <div id="items-per-page-buttons">
@@ -43,7 +64,8 @@
             </tbody>
         </table>
         <div id="adminPagination">
-            <button id="adminPrevPage">Previous</button>  <span id="adminPageInfo">Page 1</span>      <button id="adminNextPage">Next</button>   </div>
+            <button id="adminPrevPage">Previous</button> <span id="adminPageInfo">Page 1</span> <button id="adminNextPage">Next</button>
+        </div>
     </div>
     <script>
         $(function() {

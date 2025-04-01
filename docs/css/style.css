@@ -255,6 +255,38 @@ body.dark-mode {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+.cancel-modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1;
+  left: 50%; /* Center horizontally */
+  top: 50%; /* Center vertically */
+  transform: translate(-50%, -50%); /* Adjust for element size */
+  width: auto; /* Adjust to content width */
+  height: auto; /* Adjust to content height */
+  overflow: auto;
+  background-color: transparent; /* Override background color */
+}
+
+.cancel-modal .modal-content {
+  background-color: #fefefe;
+  padding: 20px;
+  border: 1px solid #888;
+  width: auto; /* Adjust to content width */
+  max-width: 400px; /* Limit the maximum width */
+  border-radius: 5px;
+  text-align: center;
+}
+
+.cancel-modal .modal-content p {
+  margin-bottom: 20px;
+}
+
+.cancel-modal .modal-content button {
+  margin: 5px; /* Reduce margin */
+  padding: 10px 15px; /* Adjust padding */
+}
+
 .close {
   color: var(--text-color);
   float: right;
@@ -413,6 +445,13 @@ body.dark-mode .items-per-page-btn:hover {
     background-color: #333;
 }
 
+body .main-content .details-buttons .cancel-button {
+  background-color: red;
+}
+
+body .main-content .details-buttons .cancel-button:hover {
+  background-color: darkred;
+}
 /* ==========================================================================
  8. Toast Styles
  ========================================================================== */
@@ -687,4 +726,31 @@ select {
 .error-message {
   color: red;
   margin-top: 10px;
+}
+
+.stats-container {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.stats-box {
+  border: 1px solid #ddd;
+  padding: 15px;
+  text-align: center;
+  width: 20%; /* Adjust as needed */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) { /* Adjust the breakpoint as needed */
+  .stats-container {
+      flex-direction: column; /* Stack boxes vertically */
+      align-items: center; /* Center the boxes horizontally */
+  }
+
+  .stats-box {
+      width: 80%; /* Make boxes wider on mobile */
+      margin-bottom: 10px; /* Add space between boxes */
+  }
 }
