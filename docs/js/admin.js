@@ -41,11 +41,18 @@ $(document).ready(function() {
                         $("#status").val(request.status);
 
                         $("#update-request").off('click').on('click', function() {
-                            const adminNotes = $("#adminNotes").val();
+                            let adminNotes = $("#adminNotes").val(); // Get value, don't trim yet
                             const status = $("#status").val();
                             const currentDate = new Date().toLocaleString();
-                            const newAdminNotes = request.adminNotes ? `${request.adminNotes}\n${currentDate}: ${adminNotes}` : `${currentDate}: ${adminNotes}`;
-
+                            let newAdminNotes = request.adminNotes; // Initialize with existing notes
+            
+                            // Explicitly check for empty string BEFORE modifying newAdminNotes
+                            if (adminNotes.trim() === "") {
+                                // Do not add a blank note
+                            } else {
+                                newAdminNotes = request.adminNotes ? `${request.adminNotes}\n${currentDate}: ${adminNotes.trim()}` : `${currentDate}: ${adminNotes.trim()}`;
+                            }
+            
                             db.collection("requests").doc(requestId).update({
                                 adminNotes: newAdminNotes,
                                 status: status

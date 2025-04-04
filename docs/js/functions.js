@@ -86,21 +86,37 @@ $(document).ready(function() {
                         $("#status").val(request.status);
 
                         $("#update-request").off('click').on('click', function() {
-                            const adminNotes = $("#adminNotes").val();
+                            let adminNotes = $("#adminNotes").val(); // Get value, don't trim yet
                             const status = $("#status").val();
                             const currentDate = new Date().toLocaleString();
-                            const newAdminNotes = request.adminNotes ? `${request.adminNotes}\n${currentDate}: ${adminNotes}` : `${currentDate}: ${adminNotes}`;
-
-                            db.collection("requests").doc(requestId).update({
-                                adminNotes: newAdminNotes,
+                            let updateData = { // Initialize updateData object
                                 status: status
-                            }).then(() => {
-                                alert("Request updated successfully.");
-                                window.location.reload();
-                            }).catch((error) => {
-                                console.error("Error updating request:", error);
-                                alert("Error updating request. Please try again.");
-                            });
+                            };
+            
+                            console.log("adminNotes (before trim):", adminNotes);
+            
+                            if (adminNotes.trim() !== "") {
+                                console.log("adminNotes (after trim):", adminNotes.trim());
+                                if (request.adminNotes) {
+                                    updateData.adminNotes = `${request.adminNotes}\n${currentDate}: ${adminNotes.trim()}`;
+                                } else {
+                                    updateData.adminNotes = `${currentDate}: ${adminNotes.trim()}`;
+                                }
+                                console.log("updateData:", updateData);
+                            } else {
+                                console.log("adminNotes is empty after trim.");
+                            }
+            
+                            console.log("Final updateData:", updateData);
+            
+                            db.collection("requests").doc(requestId).update(updateData) // Update with updateData
+                                .then(() => {
+                                    alert("Request updated successfully.");
+                                    window.location.reload();
+                                }).catch((error) => {
+                                    console.error("Error updating request:", error);
+                                    alert("Error updating request. Please try again.");
+                                });
                         });
                     } else {
                         $("#request-details").html("<p>Request not found.</p>");
