@@ -1,8 +1,6 @@
-import { auth, provider } from './firebase-config.js';
+import { auth, db } from './firebase-config.js'; // Import auth and db
 
 $(document).ready(function() {
-    const firebaseAuth = auth;
-
     $('#signupForm').submit(function(e) {
         e.preventDefault();
         const email = $('#signupEmail').val();
@@ -10,10 +8,9 @@ $(document).ready(function() {
 
         console.log("Signup form submitted. Email:", email, "Password:", password);
         console.log("Auth object:", auth);
-        console.log("firebaseAuth object:", firebaseAuth);
-        console.log("firebaseAuth.createUserWithEmailAndPassword:", firebaseAuth.createUserWithEmailAndPassword); // Add this line
+        console.log("createUserWithEmailAndPassword:", createUserWithEmailAndPassword); // Log the function directly
 
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
+        createUserWithEmailAndPassword(auth, email, password) // Use the imported function
             .then((userCredential) => {
                 const user = userCredential.user;
                 console.log('User signed up successfully:', user);
@@ -29,7 +26,7 @@ $(document).ready(function() {
     });
 
     $('#googleSignupButton').click(function() {
-        firebaseAuth.signInWithPopup(provider)
+        signInWithPopup(auth, provider) // Use imported function
             .then((result) => {
                 const user = result.user;
                 console.log('User signed up with Google:', user);
