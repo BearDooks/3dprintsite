@@ -19,10 +19,19 @@
         <div id="request-details" class="details-grid">
             </div>
         <div class="details-buttons">
-            <button id="cancel-request" class="cta-button">Cancel Request</button>
+            <button id="cancel-request" class="cta-button cancel-button">Cancel Request</button>
             <button id="back-to-dashboard" class="cta-button">Back to Dashboard</button>
         </div>
     </div>
+
+    <div id="confirmation-modal" class="modal cancel-modal"> <div class="modal-content">
+        <div class="modal-content">
+            <p>Are you sure you want to cancel this request?</p>
+            <button id="confirm-cancel" class="cta-button">Yes, Cancel</button>
+            <button id="cancel-modal" class="cta-button">No, Keep Request</button>
+        </div>
+    </div>
+
     <script>
         $(function() {
             $("#navbar-container").load("navbar.html");
