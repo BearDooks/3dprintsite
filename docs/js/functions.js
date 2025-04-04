@@ -260,6 +260,8 @@ function handleCancelRequest(requestId) {
             const request = doc.data();
             if (request.status === "Cancelled") {
                 $("#cancel-request").hide();
+            } else if (request.status === "Completed") {
+                $("#cancel-request").hide();
             } else {
                 $("#cancel-request").show();
                 $("#cancel-request").off('click').on('click', function() {
