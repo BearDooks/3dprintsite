@@ -144,18 +144,6 @@ $(document).ready(function() {
         });
     });
 
-    $("#signup-link").click(function(event) {
-        event.preventDefault();
-        $("#loginForm").parent().hide();
-        $("#signup-form").show();
-    });
-
-    $("#login-link").click(function(event) {
-        event.preventDefault();
-        $("#signup-form").hide();
-        $("#loginForm").parent().show();
-    });
-
     $("#loginForm").submit(function(event) {
         event.preventDefault();
         const email = $("#loginEmail").val();
