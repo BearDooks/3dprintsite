@@ -1,7 +1,9 @@
 import { auth, db } from './firebase-config.js';
-import { displayRequestDetails, isAdmin, showToast } from './functions.js'; // Import isAdmin and showToast
+import { displayRequestDetails } from './functions.js';
 
 $(document).ready(function() {
+    const adminUID = "lk0SSxWRWKU1ST9faUiZcuDUDh62";
+
     let adminCurrentPage = 1;
     let adminItemsPerPage = 10;
     let adminAllRequests = [];
@@ -10,9 +12,9 @@ $(document).ready(function() {
     let authStateChecked = false;
     let requestsAlreadyFetched = false;
 
-    auth.onAuthStateChanged(async user => { // Make callback async
+    auth.onAuthStateChanged(user => {
         if (window.location.pathname.includes("admin.html")) {
-            if (user && await isAdmin(user.uid)) { // Use isAdmin
+            if (user && user.uid === adminUID) {
                 $("#admin-user-display").text("Logged in as admin: " + user.email);
                 if (!authStateChecked && !requestsAlreadyFetched) {
                     authStateChecked = true;
@@ -25,10 +27,59 @@ $(document).ready(function() {
                 window.location.href = "login.html";
             }
         }
-        // The admin-request-details.html logic has been moved to functions.js
+        if (window.location.pathname.includes("admin-request-details.html")) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const requestId = urlParams.get('id');
+
+            if (user && user.uid === adminUID && requestId) {
+                db.collection("requests").doc(requestId).get().then((doc) => {
+                    if (doc.exists) {
+                        const request = doc.data();
+                        request.id = doc.id;
+                        displayRequestDetails(request, true);
+                        $("#adminNotes").val("");
+                        $("#status").val(request.status);
+
+                        $("#update-request").off('click').on('click', function() {
+                            let adminNotes = $("#adminNotes").val(); // Get value, don't trim yet
+                            const status = $("#status").val();
+                            const currentDate = new Date().toLocaleString();
+                            let newAdminNotes = request.adminNotes; // Initialize with existing notes
+            
+                            // Explicitly check for empty string BEFORE modifying newAdminNotes
+                            if (adminNotes.trim() === "") {
+                                // Do not add a blank note
+                            } else {
+                                newAdminNotes = request.adminNotes ? `${request.adminNotes}\n${currentDate}: ${adminNotes.trim()}` : `${currentDate}: ${adminNotes.trim()}`;
+                            }
+            
+                            db.collection("requests").doc(requestId).update({
+                                adminNotes: newAdminNotes,
+                                status: status
+                            }).then(() => {
+                                alert("Request updated successfully.");
+                                window.location.reload();
+                            }).catch((error) => {
+                                console.error("Error updating request:", error);
+                                alert("Error updating request. Please try again.");
+                            });
+                        });
+                    } else {
+                        $("#request-details").html("<p>Request not found.</p>");
+                    }
+                }).catch((error) => {
+                    console.error("Error loading request details:", error);
+                    $("#request-details").html("<p>Error loading request details.</p>");
+                });
+            } else if (user && user.uid !== adminUID) {
+                window.location.href = "login.html";
+            }
+        }
     });
 
-    // The #back-to-admin click handler has been moved to functions.js
+    $("#back-to-admin").click(function() {
+        window.location.href = "admin.html";
+    });
 
     function fetchAllRequests() {
         return new Promise((resolve, reject) => {
