@@ -1,8 +1,22 @@
 import { auth, db } from './firebase-config.js'; // Import auth and db
 
+// Function to check admin status from Firestore
+export async function isAdmin(userId) {
+    if (!userId) return false;
+    try {
+        const userRoleDoc = await db.collection("user_roles").doc(userId).get();
+        if (userRoleDoc.exists && userRoleDoc.data().isAdmin === true) {
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error("Error checking admin status:", error);
+        return false;
+    }
+}
+
 $(document).ready(function() {
-    const adminUID = "lk0SSxWRWKU1ST9faUiZcuDUDh62";
-    authStateObserver();
+    // authStateObserver(); // Removed call
 
     $("body").on("click", "#dark-mode-toggle", function() {
         $("body").toggleClass("dark-mode");
@@ -14,14 +28,14 @@ $(document).ready(function() {
         }
     });
 
-    function updateNavbarDropdown(user) {
+    async function updateNavbarDropdown(user) {
         const dropdownContent = $("#user-dropdown-content");
         dropdownContent.empty();
 
         if (user) {
             dropdownContent.append('<a href="dashboard.html">Dashboard</a>');
             dropdownContent.append('<a href="account.html">Account</a>');
-            if (user.uid === "lk0SSxWRWKU1ST9faUiZcuDUDh62") {
+            if (await isAdmin(user.uid)) {
                 dropdownContent.append('<a href="admin.html">Admin</a>');
             }
             dropdownContent.append('<hr>');
@@ -31,10 +45,22 @@ $(document).ready(function() {
         }
     }
 
-    auth.onAuthStateChanged(user => {
-        console.log("auth.onAuthStateChanged triggered. user:", user);
+    auth.onAuthStateChanged(async user => {
+        // console.log("auth.onAuthStateChanged triggered. user:", user); // Removed
 
-        updateNavbarDropdown(user);
+        await updateNavbarDropdown(user);
+
+        // ---- Integrated logic from authStateObserver ----
+        if (user) {
+            if (window.location.pathname.endsWith('login.html') || window.location.pathname.endsWith('signup.html')) {
+                window.location.href = "dashboard.html";
+                return; // Important: if redirecting, no need to process further page-specific logic
+            }
+        }
+        // No 'else' block needed here for signed-out users regarding redirection from login.html,
+        // as the original authStateObserver only handled the case where a user *is* logged in
+        // and on login.html. Other parts of this auth.onAuthStateChanged handle redirection
+        // for protected pages when a user is not logged in.
 
         if (window.location.pathname.includes("request-details.html")) {
             const urlParams = new URLSearchParams(window.location.search);
@@ -46,7 +72,7 @@ $(document).ready(function() {
                         if (doc.exists) {
                             const request = doc.data();
                             request.id = doc.id;
-                            if (request.userId === user.uid || user.uid === "lk0SSxWRWKU1ST9faUiZcuDUDh62") {
+                            if (request.userId === user.uid || await isAdmin(user.uid)) {
                                 displayRequestDetails(request, false, true);
                                 handleCancelRequest(requestId);
                             } else {
@@ -76,8 +102,8 @@ $(document).ready(function() {
             const urlParams = new URLSearchParams(window.location.search);
             const requestId = urlParams.get('id');
 
-            if (user && user.uid === adminUID && requestId) {
-                db.collection("requests").doc(requestId).get().then((doc) => {
+            if (user && await isAdmin(user.uid) && requestId) {
+                db.collection("requests").doc(requestId).get().then(async (doc) => {
                     if (doc.exists) {
                         const request = doc.data();
                         request.id = doc.id;
@@ -93,29 +119,29 @@ $(document).ready(function() {
                                 status: status
                             };
             
-                            console.log("adminNotes (before trim):", adminNotes);
+                            // console.log("adminNotes (before trim):", adminNotes); // Removed
             
                             if (adminNotes.trim() !== "") {
-                                console.log("adminNotes (after trim):", adminNotes.trim());
+                                // console.log("adminNotes (after trim):", adminNotes.trim()); // Removed
                                 if (request.adminNotes) {
                                     updateData.adminNotes = `${request.adminNotes}\n${currentDate}: ${adminNotes.trim()}`;
                                 } else {
                                     updateData.adminNotes = `${currentDate}: ${adminNotes.trim()}`;
                                 }
-                                console.log("updateData:", updateData);
+                                // console.log("updateData:", updateData); // Removed
                             } else {
-                                console.log("adminNotes is empty after trim.");
+                                // console.log("adminNotes is empty after trim."); // Removed
                             }
             
-                            console.log("Final updateData:", updateData);
+                            // console.log("Final updateData:", updateData); // Removed
             
                             db.collection("requests").doc(requestId).update(updateData) // Update with updateData
                                 .then(() => {
-                                    alert("Request updated successfully.");
+                                    showToast("Request updated successfully.");
                                     window.location.reload();
                                 }).catch((error) => {
                                     console.error("Error updating request:", error);
-                                    alert("Error updating request. Please try again.");
+                                    showToast("Error updating request. Please try again.");
                                 });
                         });
                     } else {
@@ -125,7 +151,13 @@ $(document).ready(function() {
                     console.error("Error loading request details:", error);
                     $("#request-details").html("<p>Error loading request details.</p>");
                 });
-            } else if (user && user.uid !== adminUID) {
+            } else if (user && !(await isAdmin(user.uid))) {
+                // Redirect if user is not admin and tries to access admin-request-details
+                if (window.location.pathname.includes("admin-request-details.html")) {
+                    window.location.href = "login.html";
+                }
+            } else if (!user && window.location.pathname.includes("admin-request-details.html")) {
+                 // Redirect if no user is logged in and tries to access admin-request-details
                 window.location.href = "login.html";
             }
         }
@@ -140,7 +172,7 @@ $(document).ready(function() {
             window.location.href = "login.html";
         }).catch((error) => {
             console.error("Error signing out:", error);
-            alert("Error signing out. Please try again.");
+            showToast("Error signing out. Please try again.");
         });
     });
 
@@ -155,7 +187,7 @@ $(document).ready(function() {
             })
             .catch((error) => {
                 console.error("Login error:", error);
-                alert(error.message);
+                showToast(error.message);
             });
     });
 
@@ -166,13 +198,13 @@ $(document).ready(function() {
 
         auth.createUserWithEmailAndPassword(email, password)
             .then(() => {
-                alert("Account created! Please log in.");
+                showToast("Account created! Please log in.");
                 $("#signup-form").hide();
                 $("#loginForm").parent().show();
             })
             .catch((error) => {
                 console.error("Signup error:", error);
-                alert(error.message);
+                showToast(error.message);
             });
     });
 
@@ -193,17 +225,17 @@ $(document).ready(function() {
             userId: auth.currentUser.uid,
         })
             .then(() => {
-                alert("Request submitted successfully!");
+                showToast("Request submitted successfully!");
                 $("#printRequestForm")[0].reset();
             })
             .catch((error) => {
                 console.error("Request submission error:", error);
-                alert("Error submitting request. Please try again.");
+                showToast("Error submitting request. Please try again.");
             });
     });
 });
 
-function showToast(message) {
+export function showToast(message) {
     const toast = $("#toast-message");
     toast.text(message);
     toast.fadeIn(400);
@@ -246,17 +278,17 @@ export function displayRequestDetails(request, isAdmin = false, isUserDashboard 
     $("#request-details div:contains('Admin Notes:') ul").css('padding-left', '20px');
 }
 
-export function authStateObserver() {
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            if (window.location.pathname.endsWith('login.html')) {
-                window.location.href = "dashboard.html";
-            }
-        } else {
-            console.log('User is signed out.');
-        }
-    });
-}
+// export function authStateObserver() { // Removed function
+//     auth.onAuthStateChanged(function(user) {
+//         if (user) {
+//             if (window.location.pathname.endsWith('login.html')) {
+//                 window.location.href = "dashboard.html";
+//             }
+//         } else {
+//             // console.log('User is signed out.'); // Removed
+//         }
+//     });
+// }
 
 function handleCancelRequest(requestId) {
     db.collection("requests").doc(requestId).get().then((doc) => {

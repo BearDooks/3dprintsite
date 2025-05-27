@@ -1,4 +1,5 @@
 import { auth, db } from './firebase-config.js';
+import { showToast } from './functions.js'; // Import showToast
 
 $(document).ready(function() {
     // --- 1. State Variables ---
@@ -34,16 +35,16 @@ $(document).ready(function() {
     });
 
     function submitNewRequest() {
-        console.log("Form submission triggered.");
+        // console.log("Form submission triggered."); // Removed
 
         const requestName = $("#requestName").val();
         const requestLink = $("#requestLink").val();
         const requestNotes = $("#requestNotes").val();
         const requestDateNeeded = $("#requestDateNeeded").val();
 
-        console.log("Submitting request to Firestore:", {
-            requestName, requestLink, requestNotes, requestDateNeeded
-        });
+        // console.log("Submitting request to Firestore:", { // Removed
+        //     requestName, requestLink, requestNotes, requestDateNeeded
+        // });
 
         const submitButton = $(this).find('button[type="submit"]');
         submitButton.prop('disabled', true);
@@ -55,7 +56,7 @@ $(document).ready(function() {
                 status: "Submitted",
                 dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
             }).then(() => {
-                console.log("Request submitted successfully.");
+                // console.log("Request submitted successfully."); // Removed
                 showToast("Request submitted successfully!");
                 $("#new-request-form")[0].reset();
                 hideModal();
@@ -88,7 +89,8 @@ $(document).ready(function() {
                 displayUserRequests();
             })
             .catch((error) => {
-                alert("Error getting requests.");
+                console.error("Error getting user requests:", error); // Keep console.error for debugging
+                showToast("Error getting user requests.");
             });
     }
 
@@ -173,13 +175,7 @@ $(document).ready(function() {
 
     initializePerPageButtons();
 
-    // --- 7. Toast Message ---
-    function showToast(message) {
-        const toast = $("#toast-message");
-        toast.text(message);
-        toast.fadeIn(400);
-        setTimeout(() => toast.fadeOut(400), 3000);
-    }
+    // --- 7. Toast Message (removed, now imported) ---
 
     // --- 8. Authentication State Change Listener ---
     auth.onAuthStateChanged(user => {
