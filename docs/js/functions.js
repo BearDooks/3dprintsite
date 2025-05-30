@@ -111,12 +111,12 @@ $(document).ready(function() {
             
                             db.collection("requests").doc(requestId).update(updateData) // Update with updateData
                                 .then(() => {
-                                    alert("Request updated successfully.");
+ showToast("Request updated successfully.");
                                     window.location.reload();
                                 }).catch((error) => {
                                     console.error("Error updating request:", error);
-                                    alert("Error updating request. Please try again.");
-                                });
+ showToast("Error updating request. Please try again.");
+ });
                         });
                     } else {
                         $("#request-details").html("<p>Request not found.</p>");
@@ -140,7 +140,7 @@ $(document).ready(function() {
             window.location.href = "login.html";
         }).catch((error) => {
             console.error("Error signing out:", error);
-            alert("Error signing out. Please try again.");
+ showToast("Error signing out. Please try again.");
         });
     });
 
@@ -156,7 +156,7 @@ $(document).ready(function() {
             .catch((error) => {
                 console.error("Login error:", error);
                 alert(error.message);
-            });
+ showToast(error.message);
     });
 
     $("#signupForm").submit(function(event) {
@@ -167,13 +167,14 @@ $(document).ready(function() {
         auth.createUserWithEmailAndPassword(email, password)
             .then(() => {
                 alert("Account created! Please log in.");
-                $("#signup-form").hide();
-                $("#loginForm").parent().show();
+ showToast("Account created! Please log in.");
+ $("#signup-form").hide();
+ $("#loginForm").parent().show();
             })
             .catch((error) => {
                 console.error("Signup error:", error);
                 alert(error.message);
-            });
+ showToast(error.message);
     });
 
     $("#printRequestForm").submit(function(event) {
