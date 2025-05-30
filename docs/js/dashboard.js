@@ -88,7 +88,7 @@ $(document).ready(function() {
                 displayUserRequests();
             })
             .catch((error) => {
-                alert("Error getting requests.");
+                showToast("Error getting requests.");
             });
     }
 

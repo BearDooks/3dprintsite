@@ -19,10 +19,10 @@ $(document).ready(function() {
                 $("#verify-email-button").off('click').on('click', function() { // Remove prior event handlers, and add a single one.
                     user.sendEmailVerification()
                         .then(function() {
-                            alert("Verification email sent. Please check your inbox.");
+                            showToast("Verification email sent. Please check your inbox.");
                         })
                         .catch(function(error) {
-                            alert("Failed to send verification email: " + error.message);
+                            showToast("Failed to send verification email: " + error.message);
                         });
                 });
 
@@ -48,7 +48,7 @@ $(document).ready(function() {
                         $("#user-display-name").text(newDisplayName);
                         modal.css("display", "none");
                     }).catch((error) => {
-                        alert(error.message);
+                        showToast(error.message);
                     });
                 });
             } else {

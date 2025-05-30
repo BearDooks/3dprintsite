@@ -57,10 +57,10 @@ $(document).ready(function() {
                                 adminNotes: newAdminNotes,
                                 status: status
                             }).then(() => {
-                                alert("Request updated successfully.");
+                                showToast("Request updated successfully.");
                                 window.location.reload();
                             }).catch((error) => {
-                                console.error("Error updating request:", error);
+                                showToast("Error updating request. Please try again.");
                                 alert("Error updating request. Please try again.");
                             });
                         });
