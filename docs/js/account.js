@@ -1,6 +1,7 @@
 import { auth } from './firebase-config.js'; // Import auth
+import { showToast } from './functions.js';
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Display user account details on account.html
     if (window.location.pathname.includes("account.html")) {
         auth.onAuthStateChanged(user => {
@@ -16,39 +17,40 @@ $(document).ready(function() {
                     $("#verify-email-button").show();
                 }
 
-                $("#verify-email-button").off('click').on('click', function() { // Remove prior event handlers, and add a single one.
+                $("#verify-email-button").off('click').on('click', function () { // Remove prior event handlers, and add a single one.
                     user.sendEmailVerification()
-                        .then(function() {
-                            showToast("Verification email sent. Please check your inbox.");
+                        .then(function () {
+                            showToast("Verification email sent. Please check your inbox.", "info");
                         })
-                        .catch(function(error) {
-                            showToast("Failed to send verification email: " + error.message);
+                        .catch(function (error) {
+                            showToast("Failed to send verification email: " + error.message, "error");
                         });
                 });
 
                 // Modal functionality
                 const modal = $("#edit-modal");
                 const span = $("#edit-modal .close")[0];
-                $("#edit-display-name").click(function() {
+                $("#edit-display-name").click(function () {
                     modal.css("display", "block");
                 });
-                span.onclick = function() {
+                span.onclick = function () {
                     modal.css("display", "none");
                 };
-                window.onclick = function(event) {
+                window.onclick = function (event) {
                     if (event.target == modal[0]) {
                         modal.css("display", "none");
                     }
                 };
-                $("#save-display-name").click(function() {
+                $("#save-display-name").click(function () {
                     const newDisplayName = $("#new-display-name").val();
                     user.updateProfile({
                         displayName: newDisplayName
                     }).then(() => {
                         $("#user-display-name").text(newDisplayName);
                         modal.css("display", "none");
+                        showToast("Display name updated successfully.", "success");
                     }).catch((error) => {
-                        showToast(error.message);
+                        showToast(error.message, "error");
                     });
                 });
             } else {

@@ -1,4 +1,5 @@
 import { auth, db } from './firebase-config.js';
+import { showToast } from './functions.js';
 
 $(document).ready(function () {
     // --- 1. State Variables ---
@@ -56,19 +57,19 @@ $(document).ready(function () {
                 dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
             }).then(() => {
                 console.log("Request submitted successfully.");
-                showToast("Request submitted successfully!");
+                showToast("Request submitted successfully!", "success");
                 $("#new-request-form")[0].reset();
                 hideModal();
                 fetchUserRequests(auth.currentUser.uid);
                 submitButton.prop('disabled', false);
             }).catch((error) => {
                 console.error("Error submitting request:", error);
-                showToast("Error submitting request. Please try again.");
+                showToast("Error submitting request. Please try again.", "error");
                 submitButton.prop('disabled', false);
             });
         } else {
             console.error("User not logged in.");
-            showToast("User not logged in. Please log in and try again.");
+            showToast("User not logged in. Please log in and try again.", "error");
             submitButton.prop('disabled', false);
         }
     }
@@ -88,7 +89,7 @@ $(document).ready(function () {
                 displayUserRequests();
             })
             .catch((error) => {
-                showToast("Error getting requests.");
+                showToast("Error getting requests.", "error");
             });
     }
 
@@ -173,13 +174,7 @@ $(document).ready(function () {
 
     initializePerPageButtons();
 
-    // --- 7. Toast Message ---
-    function showToast(message) {
-        const toast = $("#toast-message");
-        toast.text(message);
-        toast.fadeIn(400);
-        setTimeout(() => toast.fadeOut(400), 3000);
-    }
+    // --- 8. Authentication State Change Listener ---
 
     // --- 8. Authentication State Change Listener ---
     auth.onAuthStateChanged(user => {

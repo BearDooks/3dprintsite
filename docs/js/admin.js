@@ -61,7 +61,6 @@ $(document).ready(function () {
                                 setTimeout(() => window.location.reload(), 1500);
                             }).catch((error) => {
                                 showToast("Error updating request. Please try again.", "error");
-                                showToast("Error updating request. Please try again.", "error");
                             });
                         });
                     } else {

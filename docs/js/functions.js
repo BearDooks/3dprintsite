@@ -126,11 +126,11 @@ $(document).ready(function () {
 
                             db.collection("requests").doc(requestId).update(updateData) // Update with updateData
                                 .then(() => {
-                                    alert("Request updated successfully.");
+                                    showToast("Request updated successfully.", "success");
                                     window.location.reload();
                                 }).catch((error) => {
                                     console.error("Error updating request:", error);
-                                    alert("Error updating request. Please try again.");
+                                    showToast("Error updating request. Please try again.", "error");
                                 });
                         });
                     } else {
@@ -348,12 +348,12 @@ function handleCancelRequest(requestId) {
                         db.collection("requests").doc(requestId).update({
                             status: "Cancelled"
                         }).then(() => {
-                            showToast("Request cancelled successfully."); // Display toast
+                            showToast("Request cancelled successfully.", "success"); // Display toast
                             $("#request-details div:contains('Status:')").html(`<div><strong>Status:</strong> Cancelled</div>`);
                             $("#cancel-request").hide();
                         }).catch((error) => {
                             console.error("Error cancelling request:", error);
-                            showToast("Error cancelling request. Please try again."); // Display error toast
+                            showToast("Error cancelling request. Please try again.", "error"); // Display error toast
                         });
                         $("#confirmation-modal").fadeOut(); // Hide modal
                     });
