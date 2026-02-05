@@ -1,7 +1,7 @@
 import { auth, db } from './firebase-config.js';
-import { displayRequestDetails } from './functions.js';
+import { displayRequestDetails, showToast } from './functions.js';
 
-$(document).ready(function() {
+$(document).ready(function () {
     const adminUID = "lk0SSxWRWKU1ST9faUiZcuDUDh62";
 
     let adminCurrentPage = 1;
@@ -40,28 +40,28 @@ $(document).ready(function() {
                         $("#adminNotes").val("");
                         $("#status").val(request.status);
 
-                        $("#update-request").off('click').on('click', function() {
+                        $("#update-request").off('click').on('click', function () {
                             let adminNotes = $("#adminNotes").val(); // Get value, don't trim yet
                             const status = $("#status").val();
                             const currentDate = new Date().toLocaleString();
                             let newAdminNotes = request.adminNotes; // Initialize with existing notes
-            
+
                             // Explicitly check for empty string BEFORE modifying newAdminNotes
                             if (adminNotes.trim() === "") {
                                 // Do not add a blank note
                             } else {
                                 newAdminNotes = request.adminNotes ? `${request.adminNotes}\n${currentDate}: ${adminNotes.trim()}` : `${currentDate}: ${adminNotes.trim()}`;
                             }
-            
+
                             db.collection("requests").doc(requestId).update({
                                 adminNotes: newAdminNotes,
                                 status: status
                             }).then(() => {
-                                showToast("Request updated successfully.");
-                                window.location.reload();
+                                showToast("Request updated successfully.", "success");
+                                setTimeout(() => window.location.reload(), 1500);
                             }).catch((error) => {
-                                showToast("Error updating request. Please try again.");
-                                alert("Error updating request. Please try again.");
+                                showToast("Error updating request. Please try again.", "error");
+                                showToast("Error updating request. Please try again.", "error");
                             });
                         });
                     } else {
@@ -77,7 +77,7 @@ $(document).ready(function() {
         }
     });
 
-    $("#back-to-admin").click(function() {
+    $("#back-to-admin").click(function () {
         window.location.href = "admin.html";
     });
 
@@ -125,8 +125,8 @@ $(document).ready(function() {
                     <td>${request.dateAdded ? request.dateAdded.toDate().toLocaleString() : ""}</td>
                     <td>${request.adminNotes || ""}</td>
                     <td>${request.requestDateNeeded || ""}</td>
-                    <td>${request.userId || ""}</td>
-                    <td><a href="admin-request-details.html?id=${request.id}">View Details</a></td>
+                    <td><span class="mono-text">${request.userId || ""}</span></td>
+                    <td><a href="admin-request-details.html?id=${request.id}" class="view-details-btn">View Details</a></td>
                 </tr>
             `;
             tableBody.append(row);
@@ -165,7 +165,7 @@ $(document).ready(function() {
         displayRequests();
     });
 
-    $(document).on('click', '.items-per-page-btn', function() {
+    $(document).on('click', '.items-per-page-btn', function () {
         adminItemsPerPage = parseInt($(this).data('items'));
         adminCurrentPage = 1;
         displayRequests();

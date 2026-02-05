@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,33 +13,45 @@
     <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/functions.js"></script>
 </head>
+
 <body>
     <div id="navbar-container"></div>
-    <div class="main-content">
-        <h1>Admin Request Details</h1>
-        <div id="request-details" class="details-grid">
+    <div class="main-content container">
+        <div class="glass-panel text-left">
+            <h1 class="text-center">Admin Request Details</h1>
+            <div id="request-details" class="account-grid">
+                <!-- Details injected by JS -->
             </div>
 
-        <div class="admin-details-form">
-            <label for="adminNotes">Add Notes:</label><br>
-            <textarea id="adminNotes" name="adminNotes" rows="5" cols="50"></textarea><br><br>
+            <div class="admin-details-form mt-4">
+                <h3 class="mb-2">Update Request</h3>
+                <div class="form-group">
+                    <label for="adminNotes">Add Notes:</label>
+                    <textarea id="adminNotes" name="adminNotes" rows="5" class="glass-input"></textarea>
+                </div>
 
-            <label for="status">Status:</label>
-            <select id="status" name="status">
-                <option value="Submitted">Submitted</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-                <option value="Cancelled">Cancelled</option>
-            </select><br><br>
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status" name="status" class="glass-input">
+                        <option value="Submitted">Submitted</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
 
-            <button id="update-request" class="cta-button">Update Request</button>
-            <button id="back-to-admin" class="cta-button">Back to Admin</button>
+                <div class="button-group">
+                    <button id="update-request" class="cta-button">Update Request</button>
+                    <button id="back-to-admin" class="cta-button secondary">Back to Admin</button>
+                </div>
+            </div>
         </div>
     </div>
     <script>
-        $(function() {
+        $(function () {
             $("#navbar-container").load("navbar.html");
         });
     </script>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,64 +14,79 @@
     <script type="module" src="js/functions.js"></script>
     <script type="module" src="js/admin.js"></script>
 </head>
+
 <body>
     <div id="navbar-container"></div>
-    <div class="main-content">
-        <h1>Admin Dashboard</h1>
-        <p id="admin-user-display"></p>
+    <div class="main-content container">
+        <div class="glass-panel">
+            <h1>Admin Dashboard</h1>
+            <p id="admin-user-display" class="text-secondary mb-2"></p>
 
-        <div class="stats-container">
-            <div class="stats-box">
-                <h3>Submitted</h3>
-                <p id="submitted-count">0</p>
+            <div class="stats-container">
+                <div class="stats-box">
+                    <h3>Submitted</h3>
+                    <p id="submitted-count" class="stat-number">0</p>
+                </div>
+                <div class="stats-box">
+                    <h3>In Progress</h3>
+                    <p id="in-progress-count" class="stat-number">0</p>
+                </div>
+                <div class="stats-box">
+                    <h3>Completed</h3>
+                    <p id="completed-count" class="stat-number">0</p>
+                </div>
+                <div class="stats-box">
+                    <h3>Cancelled</h3>
+                    <p id="cancelled-count" class="stat-number">0</p>
+                </div>
             </div>
-            <div class="stats-box">
-                <h3>In Progress</h3>
-                <p id="in-progress-count">0</p>
-            </div>
-            <div class="stats-box">
-                <h3>Completed</h3>
-                <p id="completed-count">0</p>
-            </div>
-            <div class="stats-box">
-                <h3>Cancelled</h3>
-                <p id="cancelled-count">0</p>
-            </div>
-        </div>
 
-        <h2>All Requests</h2>
-        <label for="adminItemsPerPage">Items per page:</label>
-        <div id="items-per-page-buttons">
-            <button class="items-per-page-btn" data-items="10">10</button>
-            <button class="items-per-page-btn" data-items="20">20</button>
-            <button class="items-per-page-btn" data-items="50">50</button>
-            <button class="items-per-page-btn" data-items="100">100</button>
-        </div>
-        <table id="admin-requests-table">
-            <thead>
-                <tr>
-                    <th>Request Name</th>
-                    <th>Request Link</th>
-                    <th>Request Notes</th>
-                    <th>Status</th>
-                    <th>Date Added</th>
-                    <th>Admin Notes</th>
-                    <th>Request Date Needed</th>
-                    <th>User ID</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        <div id="adminPagination">
-            <button id="adminPrevPage">Previous</button> <span id="adminPageInfo">Page 1</span> <button id="adminNextPage">Next</button>
+            <div class="table-header">
+                <h2>All Requests</h2>
+                <div class="table-controls">
+                    <label for="adminItemsPerPage" style="margin-right: 10px; color: var(--text-secondary);">Items per
+                        page:</label>
+                    <div id="items-per-page-buttons" style="display: inline-block;">
+                        <button class="items-per-page-btn" data-items="10">10</button>
+                        <button class="items-per-page-btn" data-items="20">20</button>
+                        <button class="items-per-page-btn" data-items="50">50</button>
+                        <button class="items-per-page-btn" data-items="100">100</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table id="admin-requests-table" class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Request Name</th>
+                            <th>Request Link</th>
+                            <th>Request Notes</th>
+                            <th>Status</th>
+                            <th>Date Added</th>
+                            <th>Admin Notes</th>
+                            <th>Request Date Needed</th>
+                            <th>User ID</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="adminPagination" class="pagination-container">
+                <button id="adminPrevPage" class="pagination-btn">Previous</button>
+                <span id="adminPageInfo">Page 1</span>
+                <button id="adminNextPage" class="pagination-btn">Next</button>
+            </div>
         </div>
     </div>
     <script>
-        $(function() {
+        $(function () {
             $("#navbar-container").load("navbar.html");
         });
     </script>
 </body>
+
 </html>

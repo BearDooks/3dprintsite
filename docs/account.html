@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,53 +14,60 @@
     <script type="module" src="js/functions.js"></script>
     <script type="module" src="js/account.js"></script>
 </head>
+
 <body>
     <div id="navbar-container"></div>
-    <div class="account-container">
-        <h1>Account Details</h1>
-        <div class="account-grid">
-            <div class="account-item">
-                <strong>Email:</strong>
-                <span id="user-email"></span>
-            </div>
-            <div class="account-item">
-                <strong>User ID:</strong>
-                <span id="user-uid"></span>
-            </div>
-            <div class="account-item">
-                <strong>Email Verified:</strong>
-                <span id="user-email-verified"></span>
-                <button id="verify-email-button" style="display: none;">Verify Email</button>
-            </div>
-            <div class="account-item">
-                <strong>Creation Time:</strong>
-                <span id="user-creation-time"></span>
-            </div>
-            <div class="account-item">
-                <strong>Last Sign In:</strong>
-                <span id="user-last-sign-in-time"></span>
-            </div>
-            <div class="account-item">
-                <strong>Display Name:</strong>
-                <span id="user-display-name"></span>
-                <button id="edit-display-name">Edit</button>
+    <div class="main-content container">
+        <div class="glass-panel text-left">
+            <h1 class="text-center">Account Details</h1>
+            <div class="account-grid">
+                <div class="account-item">
+                    <strong>Email:</strong>
+                    <span id="user-email"></span>
+                </div>
+                <div class="account-item">
+                    <strong>User ID:</strong>
+                    <span id="user-uid" class="mono-text"></span>
+                </div>
+                <div class="account-item">
+                    <strong>Email Verified:</strong>
+                    <span id="user-email-verified"></span>
+                    <button id="verify-email-button" class="view-details-btn"
+                        style="display: none; margin-left: 1rem;">Verify Email</button>
+                </div>
+                <div class="account-item">
+                    <strong>Creation Time:</strong>
+                    <span id="user-creation-time"></span>
+                </div>
+                <div class="account-item">
+                    <strong>Last Sign In:</strong>
+                    <span id="user-last-sign-in-time"></span>
+                </div>
+                <div class="account-item">
+                    <strong>Display Name:</strong>
+                    <span id="user-display-name"></span>
+                    <button id="edit-display-name" class="view-details-btn" style="margin-left: 1rem;">Edit</button>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="edit-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content glass-panel">
             <span class="close">&times;</span>
             <h2>Edit Display Name</h2>
-            <input type="text" id="new-display-name" placeholder="New Display Name"><br><br>
-            <button id="save-display-name">Save</button>
+            <div class="form-group">
+                <input type="text" id="new-display-name" placeholder="New Display Name">
+            </div>
+            <button id="save-display-name" class="cta-button">Save</button>
         </div>
     </div>
 
     <script>
-        $(function() {
+        $(function () {
             $("#navbar-container").load("navbar.html");
         });
     </script>
 </body>
+
 </html>

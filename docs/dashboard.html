@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,73 +14,86 @@
     <script type="module" src="js/functions.js"></script>
     <script type="module" src="js/dashboard.js"></script>
 </head>
+
 <body>
     <div id="navbar-container"></div>
-    <div class="main-content">
-        <h1>User Dashboard</h1>
-        <p id="user-display"></p>
-        <button id="new-request-button">New Request</button>
-        <div id="new-request-modal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>New Request</h2>
-                <form id="new-request-form">
-                    <div class="form-group">
-                        <label for="requestName">Request Name:</label>
-                        <input type="text" id="requestName" name="requestName" required>
-                    </div>
-        
-                    <div class="form-group">
-                        <label for="requestLink">Request Link:</label>
-                        <input type="text" id="requestLink" name="requestLink">
-                    </div>
-        
-                    <div class="form-group">
-                        <label for="requestNotes">Request Notes:</label>
-                        <textarea id="requestNotes" name="requestNotes" rows="4"></textarea>
-                    </div>
-        
-                    <div class="form-group">
-                        <label for="requestDateNeeded">Request Date Needed:</label>
-                        <input type="date" id="requestDateNeeded" name="requestDateNeeded">
-                    </div>
-        
-                    <button type="submit" class="cta-button">Submit Request</button>
-                </form>
+    <div class="main-content container">
+        <div class="glass-panel">
+            <h1>User Dashboard</h1>
+            <p id="user-display"></p>
+            <button id="new-request-button" class="cta-button" style="margin-bottom: 2rem;">New Request</button>
+            <div id="new-request-modal" class="modal">
+                <div class="modal-content glass-panel">
+                    <span class="close">&times;</span>
+                    <h2>New Request</h2>
+                    <form id="new-request-form">
+                        <div class="form-group">
+                            <label for="requestName">Request Name:</label>
+                            <input type="text" id="requestName" name="requestName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="requestLink">Request Link:</label>
+                            <input type="text" id="requestLink" name="requestLink">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="requestNotes">Request Notes:</label>
+                            <textarea id="requestNotes" name="requestNotes" rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="requestDateNeeded">Request Date Needed:</label>
+                            <input type="date" id="requestDateNeeded" name="requestDateNeeded">
+                        </div>
+
+                        <button type="submit" class="cta-button">Submit Request</button>
+                    </form>
+                </div>
             </div>
-        </div>
-        <h2>Your Requests</h2>
-        <label for="userItemsPerPage">Items per page:</label>
-        <div id="items-per-page-buttons">
-            <button class="items-per-page-btn" data-items="10">10</button>
-            <button class="items-per-page-btn" data-items="20">20</button>
-            <button class="items-per-page-btn" data-items="50">50</button>
-            <button class="items-per-page-btn" data-items="100">100</button>
-        </div>
-        <table id="requests-table">
-            <thead>
-                <tr>
-                    <th>Request Name</th>
-                    <th>Status</th>
-                    <th>Date Added</th>
-                    <th>Request Date Needed</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        <div id="userPagination">
-            <button id="userPrevPage">Previous</button>
-            <span id="userPageInfo">Page 1</span>
-            <button id="userNextPage">Next</button>
+
+            <div class="table-header">
+                <h2>Your Requests</h2>
+                <div class="items-per-page">
+                    <label for="userItemsPerPage">Items per page:</label>
+                    <div id="items-per-page-buttons">
+                        <button class="items-per-page-btn selected" data-items="10">10</button>
+                        <button class="items-per-page-btn" data-items="20">20</button>
+                        <button class="items-per-page-btn" data-items="50">50</button>
+                        <button class="items-per-page-btn" data-items="100">100</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table id="requests-table">
+                    <thead>
+                        <tr>
+                            <th>Request Name</th>
+                            <th>Status</th>
+                            <th>Date Added</th>
+                            <th>Request Date Needed</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="userPagination" class="pagination">
+                <button id="userPrevPage" class="pagination-btn">Previous</button>
+                <span id="userPageInfo">Page 1</span>
+                <button id="userNextPage" class="pagination-btn">Next</button>
+            </div>
         </div>
     </div>
     <div id="toast-message"></div>
     <script>
-        $(function() {
+        $(function () {
             $("#navbar-container").load("navbar.html");
         });
     </script>
 </body>
+
 </html>

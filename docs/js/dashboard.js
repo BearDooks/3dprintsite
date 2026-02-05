@@ -1,6 +1,6 @@
 import { auth, db } from './firebase-config.js';
 
-$(document).ready(function() {
+$(document).ready(function () {
     // --- 1. State Variables ---
     let userCurrentPage = 1;
     let userItemsPerPage = 10;
@@ -21,14 +21,14 @@ $(document).ready(function() {
     $("#new-request-button").click(showModal);
     modalCloseButton.onclick = hideModal;
 
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         if (event.target === modal[0]) {
             hideModal();
         }
     };
 
     // --- 3. Form Submission ---
-    $("#new-request-form").submit(function(event) {
+    $("#new-request-form").submit(function (event) {
         event.preventDefault();
         submitNewRequest();
     });
@@ -113,7 +113,7 @@ $(document).ready(function() {
                     <td>${request.status || ""}</td>
                     <td>${request.dateAdded ? request.dateAdded.toDate().toLocaleString() : ""}</td>
                     <td>${request.requestDateNeeded || ""}</td>
-                    <td><a href="request-details.html?id=${request.id}">View Details</a></td>
+                    <td><a href="request-details.html?id=${request.id}" class="view-details-btn">View Details</a></td>
                 </tr>
             `;
             tableBody.append(row);
@@ -153,7 +153,7 @@ $(document).ready(function() {
         displayUserRequests();
     });
 
-    $(document).on('click', '.items-per-page-btn', function() {
+    $(document).on('click', '.items-per-page-btn', function () {
         userItemsPerPage = parseInt($(this).data('items'));
         userCurrentPage = 1;
         displayUserRequests();

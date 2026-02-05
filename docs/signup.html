@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script type="module" src="js/signup.js"></script>
 </head>
+
 <body>
     <div id="navbar-container"></div>
     <div class="main-content">
@@ -26,17 +28,15 @@
                     <button type="submit" class="cta-button">Sign Up</button>
                     <div id="signup-error" class="error-message"></div>
                 </form>
-                <div class="google-signup">
-                    <button id="googleSignupButton" class="cta-button google-button">Sign Up with Google</button>
-                </div>
                 <p>Already have an account? <a href="login.html">Login</a></p>
             </div>
         </div>
     </div>
     <script>
-        $(function() {
+        $(function () {
             $("#navbar-container").load("navbar.html");
         });
     </script>
 </body>
+
 </html>

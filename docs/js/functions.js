@@ -1,10 +1,23 @@
 import { auth, db } from './firebase-config.js'; // Import auth and db
 
-$(document).ready(function() {
+$(document).ready(function () {
     const adminUID = "lk0SSxWRWKU1ST9faUiZcuDUDh62";
     authStateObserver();
 
-    $("body").on("click", "#dark-mode-toggle", function() {
+    // Dropdown Toggle Logic
+    $(document).on("click", ".dropbtn", function (e) {
+        e.stopPropagation();
+        $("#user-dropdown-content").toggleClass("show");
+    });
+
+    // Close dropdown when clicking outside
+    $(document).on("click", function (e) {
+        if (!$(e.target).closest(".dropdown").length) {
+            $("#user-dropdown-content").removeClass("show");
+        }
+    });
+
+    $("body").on("click", "#dark-mode-toggle", function () {
         $("body").toggleClass("dark-mode");
         const icon = $("#dark-mode-icon");
         if ($("body").hasClass("dark-mode")) {
@@ -19,6 +32,7 @@ $(document).ready(function() {
         dropdownContent.empty();
 
         if (user) {
+            $(".navbar-logo").attr("href", "dashboard.html");
             dropdownContent.append('<a href="dashboard.html">Dashboard</a>');
             dropdownContent.append('<a href="account.html">Account</a>');
             if (user.uid === "lk0SSxWRWKU1ST9faUiZcuDUDh62") {
@@ -27,6 +41,7 @@ $(document).ready(function() {
             dropdownContent.append('<hr>');
             dropdownContent.append('<a href="#" id="logout-link">Logout</a>');
         } else {
+            $(".navbar-logo").attr("href", "index.html");
             dropdownContent.append('<a href="login.html">Login</a>');
         }
     }
@@ -67,7 +82,7 @@ $(document).ready(function() {
                 }
             }
 
-            $("#back-to-dashboard").click(function() {
+            $("#back-to-dashboard").click(function () {
                 window.location.href = "dashboard.html";
             });
         }
@@ -85,16 +100,16 @@ $(document).ready(function() {
                         $("#adminNotes").val("");
                         $("#status").val(request.status);
 
-                        $("#update-request").off('click').on('click', function() {
+                        $("#update-request").off('click').on('click', function () {
                             let adminNotes = $("#adminNotes").val(); // Get value, don't trim yet
                             const status = $("#status").val();
                             const currentDate = new Date().toLocaleString();
                             let updateData = { // Initialize updateData object
                                 status: status
                             };
-            
+
                             console.log("adminNotes (before trim):", adminNotes);
-            
+
                             if (adminNotes.trim() !== "") {
                                 console.log("adminNotes (after trim):", adminNotes.trim());
                                 if (request.adminNotes) {
@@ -106,17 +121,17 @@ $(document).ready(function() {
                             } else {
                                 console.log("adminNotes is empty after trim.");
                             }
-            
+
                             console.log("Final updateData:", updateData);
-            
+
                             db.collection("requests").doc(requestId).update(updateData) // Update with updateData
                                 .then(() => {
- showToast("Request updated successfully.");
+                                    alert("Request updated successfully.");
                                     window.location.reload();
                                 }).catch((error) => {
                                     console.error("Error updating request:", error);
- showToast("Error updating request. Please try again.");
- });
+                                    alert("Error updating request. Please try again.");
+                                });
                         });
                     } else {
                         $("#request-details").html("<p>Request not found.</p>");
@@ -130,21 +145,21 @@ $(document).ready(function() {
             }
         }
 
-        $("#back-to-admin").click(function() {
+        $("#back-to-admin").click(function () {
             window.location.href = "admin.html";
         });
     });
 
-    $(document).on("click", "#logout-link", function() {
+    $(document).on("click", "#logout-link", function () {
         auth.signOut().then(() => {
             window.location.href = "login.html";
         }).catch((error) => {
             console.error("Error signing out:", error);
- showToast("Error signing out. Please try again.");
+            showToast("Error signing out. Please try again.", "error");
         });
     });
 
-    $("#loginForm").submit(function(event) {
+    $("#loginForm").submit(function (event) {
         event.preventDefault();
         const email = $("#loginEmail").val();
         const password = $("#loginPassword").val();
@@ -155,29 +170,28 @@ $(document).ready(function() {
             })
             .catch((error) => {
                 console.error("Login error:", error);
-                alert(error.message);
- showToast(error.message);
+                showToast(error.message, "error");
+            });
     });
 
-    $("#signupForm").submit(function(event) {
+    $("#signupForm").submit(function (event) {
         event.preventDefault();
         const email = $("#signupEmail").val();
         const password = $("#signupPassword").val();
 
         auth.createUserWithEmailAndPassword(email, password)
             .then(() => {
-                alert("Account created! Please log in.");
- showToast("Account created! Please log in.");
- $("#signup-form").hide();
- $("#loginForm").parent().show();
+                showToast("Account created! Please log in.", "success");
+                $("#signup-form").hide();
+                $("#loginForm").parent().show();
             })
             .catch((error) => {
                 console.error("Signup error:", error);
-                alert(error.message);
- showToast(error.message);
+                showToast(error.message, "error");
+            });
     });
 
-    $("#printRequestForm").submit(function(event) {
+    $("#printRequestForm").submit(function (event) {
         event.preventDefault();
         const name = $("#name").val();
         const email = $("#email").val();
@@ -194,23 +208,58 @@ $(document).ready(function() {
             userId: auth.currentUser.uid,
         })
             .then(() => {
-                alert("Request submitted successfully!");
+                showToast("Request submitted successfully!", "success");
                 $("#printRequestForm")[0].reset();
             })
             .catch((error) => {
                 console.error("Request submission error:", error);
-                alert("Error submitting request. Please try again.");
+                showToast("Error submitting request. Please try again.", "error");
             });
     });
 });
 
-function showToast(message) {
-    const toast = $("#toast-message");
-    toast.text(message);
-    toast.fadeIn(400);
-    setTimeout(function() {
-        toast.fadeOut(400);
-    }, 3000);
+export function showToast(message, type = 'success') {
+    let toastContainer = $("#toast-container");
+    if (toastContainer.length === 0) {
+        $("body").append('<div id="toast-container"></div>');
+        toastContainer = $("#toast-container");
+    }
+
+    let iconClass = 'fa-check-circle';
+    let toastClass = 'toast-success';
+    let title = 'Success';
+
+    if (type === 'error') {
+        iconClass = 'fa-times-circle';
+        toastClass = 'toast-error';
+        title = 'Error';
+    } else if (type === 'warning') {
+        iconClass = 'fa-exclamation-triangle';
+        toastClass = 'toast-warning';
+        title = 'Warning';
+    } else if (type === 'info') {
+        iconClass = 'fa-info-circle';
+        toastClass = 'toast-info';
+        title = 'Info';
+    }
+
+    const toastHtml = `
+        <div class="toast ${toastClass}">
+            <i class="fas ${iconClass}"></i>
+            <span><strong>${title}:</strong> ${message}</span>
+            <div class="close-btn" onclick="$(this).parent().fadeOut(function(){ $(this).remove(); })">&times;</div>
+        </div>
+    `;
+
+    const toastElement = $(toastHtml).hide();
+    toastContainer.append(toastElement);
+    toastElement.fadeIn();
+
+    setTimeout(function () {
+        toastElement.fadeOut(function () {
+            $(this).remove();
+        });
+    }, 4000);
 }
 
 export function displayRequestDetails(request, isAdmin = false, isUserDashboard = false) {
@@ -218,37 +267,60 @@ export function displayRequestDetails(request, isAdmin = false, isUserDashboard 
     detailsDiv.empty();
 
     let detailsHTML = `
-        <div><strong>Request Name:</strong> ${request.requestName || "N/A"}</div>
-        <div><strong>Request Link:</strong> ${request.requestLink || "N/A"}</div>
-        <div><strong>Request Notes:</strong> ${request.requestNotes || "N/A"}</div>
-        <div><strong>Status:</strong> ${request.status || "N/A"}</div>
-        <div><strong>Date Added:</strong> ${request.dateAdded ? request.dateAdded.toDate().toLocaleString() : "N/A"}</div>
-        <div><strong>Request Date Needed:</strong> ${request.requestDateNeeded || "N/A"}</div>
+        <div class="account-item">
+            <strong>Request Name:</strong>
+            <span>${request.requestName || "N/A"}</span>
+        </div>
+        <div class="account-item">
+            <strong>Request Link:</strong>
+            <span>${request.requestLink ? `<a href="${request.requestLink}" target="_blank" class="accent-link">View Link</a>` : "N/A"}</span>
+        </div>
+        <div class="account-item">
+            <strong>Request Notes:</strong>
+            <span>${request.requestNotes || "N/A"}</span>
+        </div>
+        <div class="account-item">
+            <strong>Status:</strong>
+            <span>${request.status || "N/A"}</span>
+        </div>
+        <div class="account-item">
+            <strong>Date Added:</strong>
+            <span>${request.dateAdded ? request.dateAdded.toDate().toLocaleString() : "N/A"}</span>
+        </div>
+        <div class="account-item">
+            <strong>Request Date Needed:</strong>
+            <span>${request.requestDateNeeded || "N/A"}</span>
+        </div>
+        <div class="account-item">
+            <strong>User ID:</strong>
+            <span class="mono-text">${request.userId || "N/A"}</span>
+        </div>
+        <div class="account-item">
+            <strong>Request ID:</strong>
+            <span class="mono-text">${request.id || "N/A"}</span>
+        </div>
     `;
 
     if (request.adminNotes) {
-        let adminNotesList = "<ul>";
+        let adminNotesList = "<ul class='admin-notes-list'>";
         const notesArray = request.adminNotes.split('\n');
         notesArray.forEach(note => {
             adminNotesList += `<li>${note}</li>`;
         });
         adminNotesList += "</ul>";
-        detailsHTML += `<div><strong>Admin Notes:</strong> ${adminNotesList}</div>`;
-    }
-
-    if (!isUserDashboard) {
-        detailsHTML += `<div><strong>User ID:</strong> ${request.userId || "N/A"}</div>`;
-    }
-
-    detailsHTML += `<div><strong>Request ID:</strong> ${request.id || "N/A"}</div>`;
-
-    detailsDiv.append(detailsHTML);
+        detailsHTML += `
+            <div class="account-item full-width">
+                <strong>Admin Notes:</strong>
+                <div>${adminNotesList}</div>
+            </div>
+        `;
+    } detailsDiv.append(detailsHTML);
     $("#request-details div:contains('Admin Notes:')").css('text-align', 'left');
     $("#request-details div:contains('Admin Notes:') ul").css('padding-left', '20px');
 }
 
 export function authStateObserver() {
-    auth.onAuthStateChanged(function(user) {
+    auth.onAuthStateChanged(function (user) {
         if (user) {
             if (window.location.pathname.endsWith('login.html')) {
                 window.location.href = "dashboard.html";
@@ -269,10 +341,10 @@ function handleCancelRequest(requestId) {
                 $("#cancel-request").hide();
             } else {
                 $("#cancel-request").show();
-                $("#cancel-request").off('click').on('click', function() {
+                $("#cancel-request").off('click').on('click', function () {
                     $("#confirmation-modal").fadeIn(); // Show confirmation modal
 
-                    $("#confirm-cancel").off('click').on('click', function() {
+                    $("#confirm-cancel").off('click').on('click', function () {
                         db.collection("requests").doc(requestId).update({
                             status: "Cancelled"
                         }).then(() => {
@@ -286,7 +358,7 @@ function handleCancelRequest(requestId) {
                         $("#confirmation-modal").fadeOut(); // Hide modal
                     });
 
-                    $("#cancel-modal").off('click').on('click', function() {
+                    $("#cancel-modal").off('click').on('click', function () {
                         $("#confirmation-modal").fadeOut(); // Hide modal
                     });
                 });

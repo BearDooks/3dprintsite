@@ -1,7 +1,8 @@
 import { auth, db } from './firebase-config.js'; // Import auth and db
+import { showToast } from './functions.js';
 
-$(document).ready(function() {
-    $('#signupForm').submit(function(e) {
+$(document).ready(function () {
+    $('#signupForm').submit(function (e) {
         e.preventDefault();
         const email = $('#signupEmail').val();
         const password = $('#signupPassword').val();
@@ -14,29 +15,16 @@ $(document).ready(function() {
             .then((userCredential) => {
                 const user = userCredential.user;
                 console.log('User signed up successfully:', user);
-                alert('Account created! Please log in.');
-                window.location.href = 'login.html';
+                showToast('Account created! Please log in.');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 console.error('Signup error:', errorCode, errorMessage);
-                $('#signup-error').text(errorMessage);
-            });
-    });
-
-    $('#googleSignupButton').click(function() {
-        signInWithPopup(auth, provider) // Use imported function
-            .then((result) => {
-                const user = result.user;
-                console.log('User signed up with Google:', user);
-                window.location.href = 'dashboard.html';
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.error('Google signup error:', errorCode, errorMessage);
-                $('#signup-error').text(errorMessage);
+                showToast(errorMessage, 'error');
             });
     });
 });

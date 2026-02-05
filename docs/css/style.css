@@ -1,756 +1,1036 @@
-/* ==========================================================================
-   1. Reset and Base Styles
-   ========================================================================== */
-
-/* Reset some default styles */
-
-* {
-  box-sizing: border-box;
-}
-
-body, h1, h2, p, ul, li {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent-primary: #38bdf8;
+  --accent-secondary: #2dd4bf;
+  --accent-glow: rgba(56, 189, 248, 0.5);
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --font-main: "Inter", sans-serif;
+  --font-display: "Montserrat", sans-serif;
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  font-family: var(--font-main);
+  background: radial-gradient(circle at top center, #1e3a5f 0%, #0f172a 70%, #020617 100%);
+  background-attachment: fixed;
+  color: var(--text-primary);
   line-height: 1.6;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  background-color: var(--body-bg);
-  color: var(--text-color);
-  overflow-x: hidden; /* Prevent horizontal scrolling */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ==========================================================================
- 2. Color Variables (Light and Dark Modes)
- ========================================================================== */
-
-:root {
-  /* Light Mode Colors */
-  --body-bg: #F8F8FF;
-  --text-color: #2F4F4F;
-  --primary-color: #007BFF;
-  --secondary-color: #FF6347;
-  --accent-color: #20B2AA;
-  --surface-color: white;
-  --border-color: #ddd;
+.container {
+  width: 100%;
+  max-width: 800px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-body.dark-mode {
-  /* Dark Mode Colors */
-  --body-bg: #121212;
-  --text-color: #FFFFFF;
-  --primary-color: #6495ED;
-  --secondary-color: #03DAC6;
-  --accent-color: #00CED1;
-  --surface-color: #1E1E1E;
-  --border-color: #333;
+/* Glass Panel Card */
+.glass-panel {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* ==========================================================================
- 3. Navigation Bar Styles
- ========================================================================== */
+.glass-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+}
 
-.navbar {
-  background-color: var(--primary-color);
+/* Typography */
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 3rem;
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Text Gradient Effect */
+.text-gradient {
+  background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Profile Image (Optional but looks good) */
+.profile-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-primary);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* Links / Buttons */
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.link-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.link-btn:hover {
+  background: var(--accent-primary);
+  color: #0f172a;
+  /* Dark text on bright hover */
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+footer a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: var(--accent-primary);
+}
+
+/* CTA Button */
+.cta-button {
+  display: inline-block;
+  background: var(--accent-primary);
+  color: #0f172a;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.8rem 2rem;
+  border-radius: 2rem;
+  margin-top: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.95rem;
+}
+
+/* --- Dashboard & Table Styles --- */
+.container.main-content {
+  padding-top: 6rem;
+  /* Account for fixed navbar */
+  max-width: 1200px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 1rem;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--glass-border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th,
+td {
+  padding: 1rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+th {
+  background: rgba(15, 23, 42, 0.5);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Status Badges (Example usage) */
+/* You might need to update JS to add these classes to status cells */
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-pending {
+  background: rgba(234, 179, 8, 0.2);
+  color: #facc15;
+}
+
+.status-completed {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.status-cancelled {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  margin: 10% auto;
+  padding: 2rem;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.close {
+  color: var(--text-secondary);
+  float: right;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close:hover {
+  color: var(--accent-primary);
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 1rem;
+  box-sizing: border-box;
+  /* Important for padding */
+  transition: all 0.2s;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+/* Pagination & Controls */
+.items-per-page {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.items-per-page-btn,
+.pagination-btn {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.items-per-page-btn.selected,
+.items-per-page-btn:hover,
+.pagination-btn:hover {
+  background: var(--accent-primary);
+  color: #0f172a;
+  border-color: var(--accent-primary);
+}
+
+.pagination {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+#userPageInfo {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: #38bdf8;
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.6);
+  color: #020617;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  .glass-panel {
+    padding: 1.5rem;
+  }
+}
+
+/* --- Resume / Profile Additions --- */
+.profile-img {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--accent-primary);
+  box-shadow: 0 0 25px var(--accent-glow);
+  margin-bottom: 2rem;
+  animation: fadeIn 1s ease-out;
+}
+
+.resume-container {
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+  padding-bottom: 4rem;
+}
+
+.resume-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  position: relative;
+  padding-top: 1rem;
+}
+
+.resume-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.resume-header h1 {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.resume-role {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.resume-contact {
+  color: var(--accent-secondary);
+  font-size: 0.95rem;
+  display: inline-block;
+  margin-top: 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  border: 1px solid transparent;
+}
+
+.back-link:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--glass-border);
+}
+
+@media (max-width: 768px) {
+  .resume-nav {
+    position: static;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .resume-header h1 {
+    font-size: 2.5rem;
+  }
+}
+
+.resume-section h2 {
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.job-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: background 0.2s;
+}
+
+.job-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.job-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+
+.job-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.job-company {
+  color: var(--accent-primary);
+  font-weight: 500;
+}
+
+.job-date {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-family: var(--font-display);
+}
+
+.job-details {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.job-details li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.job-details li::before {
+  content: "▹";
+  position: absolute;
+  left: 0;
+  color: var(--accent-secondary);
+}
+
+.skills-category {
+  margin-bottom: 2rem;
+}
+
+.skills-category h3 {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.skill-tag {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-tag::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(56, 189, 248, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: 0.5s;
+}
+
+.skill-tag:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+  transform: translateY(-2px);
   color: white;
-  padding: 1rem 0;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.skill-tag:hover::before {
+  transform: translateX(100%);
+}
+
+/* Cookie Banner */
+.cookie-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 320px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cookie-content p {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.cookie-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-start;
+}
+
+.btn-accept,
+.btn-decline {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  flex: 1;
+  text-align: center;
+}
+
+.btn-accept {
+  background: rgba(255, 255, 255, 0.9);
+  color: #0f172a;
+  border: none;
+}
+
+.btn-accept:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+.btn-decline {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-decline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- NavBar --- */
+.navbar {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .navbar-container {
-  width: 90%;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .navbar-logo {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text-primary);
   text-decoration: none;
-  color: white;
-  white-space: normal; /* Allow text to wrap */
-  word-wrap: break-word; /* Force words to break if needed */
+  letter-spacing: -0.025em;
+  background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.navbar-menu {
-  list-style: none;
-  display: flex;
-}
-
-.navbar-item {
-  margin-left: 1.5rem;
-}
-
-.navbar-link {
-  text-decoration: none;
-  color: white;
-  transition: color 0.3s ease;
-}
-
-.navbar-link:hover {
-  color: #bbb;
-}
-
-#dark-mode-toggle {
-  background: none;
-  border: none;
+/* Navbar Buttons / Icons */
+.dropbtn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
   cursor: pointer;
-  color: white;
-  font-size: 1.2em;
-}
-
-@media (max-width: 600px) {
-  .dropbtn,
-  #dark-mode-toggle {
-      font-size: 1em; /* Reduce font size */
-      padding: 0.2rem; /* Reduce padding */
-  }
-
-  .navbar-logo {
-      font-size: 1.2rem;
-  }
-
-  .navbar-container {
-    padding: 0.5rem 0; /* Reduce padding */
-}
-}
-
-/* ==========================================================================
- 4. Main Content Styles
- ========================================================================== */
-
- .main-content {
-  width: 90%;
-  margin: 2rem auto;
-  padding: 5vw; /* Original padding */
-  background-color: var(--surface-color);
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-@media (max-width: 600px) {
-  .main-content {
-      width: 100%;
-      padding: 3vw; /* Reduced padding for smaller screens */
-      margin: 1rem auto;
-  }
-
-  .main-content h1 {
-      font-size: 1.8rem;
-  }
-  .main-content p {
-      font-size: 1rem;
-  }
-}
-
-@media (max-width: 320px) { /* Extra small screens */
-  .main-content {
-      padding: 10px; /* Use fixed padding for very small screens */
-  }
-}
-
-.main-content h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: var(--primary-color);
-}
-
-.main-content p {
   font-size: 1.1rem;
-  color: var(--text-color);
-  margin-bottom: 2rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.main-content .cta-button {
-  display: inline-block;
-  padding: 1rem 2rem;
-  background-color: var(--primary-color);
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+.dropbtn:hover,
+.dropdown:hover .dropbtn {
+  color: var(--accent-primary);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.main-content .cta-button:hover {
-  background-color: #0056b3;
-}
-
-/* ==========================================================================
- 5. Dropdown Styles
- ========================================================================== */
-
+/* User Dropdown */
 .dropdown {
   position: relative;
   display: inline-block;
-}
-
-.dropbtn {
-  background-color: transparent;
-  color: white;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: none;
-  cursor: pointer;
+  margin-left: 1rem;
 }
 
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: var(--surface-color);
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
   right: 0;
-  border-radius: 8px;
+  top: 100%;
+  margin-top: 0.5rem;
+  min-width: 200px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  z-index: 1001;
+  animation: fadeIn 0.1s ease-out;
+}
+
+.dropdown-content.show {
+  display: block;
 }
 
 .dropdown-content a {
-  color: var(--text-color);
-  padding: 12px 16px;
+  color: var(--text-secondary);
+  padding: 0.75rem 1rem;
   text-decoration: none;
   display: block;
-  transition: background-color 0.3s ease;
-  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
 }
 
 .dropdown-content a:hover {
-  background-color: #ddd;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
 }
 
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-/* ==========================================================================
- 6. Modal Styles
- ========================================================================== */
-
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4);
-}
-
-.modal-content {
-  background-color: var(--surface-color);
-  margin: 15% auto;
-  padding: 20px;
-  border: 1px solid var(--border-color);
-  width: 80%;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.cancel-modal {
-  display: none; /* Hidden by default */
-  position: fixed;
-  z-index: 1;
-  left: 50%; /* Center horizontally */
-  top: 50%; /* Center vertically */
-  transform: translate(-50%, -50%); /* Adjust for element size */
-  width: auto; /* Adjust to content width */
-  height: auto; /* Adjust to content height */
-  overflow: auto;
-  background-color: transparent; /* Override background color */
-}
-
-.cancel-modal .modal-content {
-  background-color: #fefefe;
-  padding: 20px;
-  border: 1px solid #888;
-  width: auto; /* Adjust to content width */
-  max-width: 400px; /* Limit the maximum width */
-  border-radius: 5px;
-  text-align: center;
-}
-
-.cancel-modal .modal-content p {
-  margin-bottom: 20px;
-}
-
-.cancel-modal .modal-content button {
-  margin: 5px; /* Reduce margin */
-  padding: 10px 15px; /* Adjust padding */
-}
-
-.close {
-  color: var(--text-color);
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* Modern Form Group Styling (Improved with Grid) */
-#new-request-form {
-  display: grid;
-  grid-template-columns: 1fr; /* Single column on small screens */
-  gap: 1.5rem;
-}
-
-@media (min-width: 600px) {
-  #new-request-form {
-      grid-template-columns: 1fr 1fr; /* Two columns on larger screens */
-  }
-
-  #new-request-form textarea {
-      grid-column: 1 / 3; /* Span both columns */
-  }
-
-  #new-request-form button[type="submit"] {
-      grid-column: 1 / 3; /* Span both columns */
-  }
-}
-
-.form-group {
-  text-align: left;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  color: var(--text-color);
-}
-
-.form-group input[type="text"],
-.form-group input[type="date"],
-.form-group textarea {
-  width: calc(100% - 12px);
-  padding: 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease;
-  background-color: var(--surface-color);
-  color: var(--text-color);
-}
-
-.form-group input[type="text"]:focus,
-.form-group input[type="date"]:focus,
-.form-group textarea:focus {
-  border-color: var(--primary-color);
-  outline: none;
-}
-
-/* Updated Modal Button Styling (Using existing cta-button) */
-.modal-content .cta-button {
+/* Table Actions */
+.view-details-btn {
   display: inline-block;
-  padding: 1rem 2rem;
-  background-color: var(--primary-color);
-  color: white;
+  padding: 0.4rem 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
   text-decoration: none;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  border: none;
-  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
 }
 
-.modal-content .cta-button:hover {
-  background-color: #0056b3;
+.view-details-btn:hover {
+  background: var(--accent-primary);
+  color: #0f172a;
+  border-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
 }
 
-/* ==========================================================================
- 7. Button Styles
- ========================================================================== */
-
-#edit-display-name,
-#new-request-button,
-#verify-email-button,
-#userPrevPage, #userNextPage,
-.items-per-page-btn {
-  padding: 10px 15px;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-#edit-display-name {
-  margin-top: 10px;
-}
-
-#new-request-button {
-  margin-bottom: 20px;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-}
-
-#verify-email-button {
-  margin-top: 2rem;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-}
-
-#userPrevPage, #userNextPage, #adminPrevPage, #adminNextPage,
-.items-per-page-btn {
-    padding: 8px 16px;
-    background-color: var(--surface-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    margin: 5px;
-}
-
-#userPrevPage:disabled, #userNextPage:disabled, #adminPrevPage:disabled, #adminNextPage:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.items-per-page-btn.active {
-  background-color: var(--primary-color);
-  color: white;
-  border-color: var(--primary-color);
-}
-
-#edit-display-name:hover,
-#new-request-button:hover,
-#verify-email-button:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
-}
-
-#userPrevPage:hover, #userNextPage:hover, #adminPrevPage:hover, #adminNextPage:hover,
-.items-per-page-btn:hover {
-    background-color: #ddd;
-}
-
-body.dark-mode #userPrevPage:hover, body.dark-mode #userNextPage:hover, body.dark-mode #adminPrevPage:hover, body.dark-mode #adminNextPage:hover,
-body.dark-mode .items-per-page-btn:hover {
-    background-color: #333;
-}
-
-body .main-content .details-buttons .cancel-button {
-  background-color: red;
-}
-
-body .main-content .details-buttons .cancel-button:hover {
-  background-color: darkred;
-}
-/* ==========================================================================
- 8. Toast Styles
- ========================================================================== */
-
-#toast-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-}
-
-#toast-message {
-  background-color: #4CAF50;
-  color: white;
-  text-align: center;
-  border-radius: 5px;
-  padding: 16px;
-  display: none;
-}
-
-/* ==========================================================================
- 9. Table Styles
- ========================================================================== */
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-  background-color: var(--surface-color);
-}
-
-th, td {
-  border: 1px solid var(--border-color);
-  padding: 10px;
+/* --- Account Page --- */
+.text-left {
   text-align: left;
-  word-wrap: break-word;
 }
 
-th {
-  background-color: #f2f2f2;
-}
-
-body.dark-mode th {
-  background-color: #333;
-  color: white;
-}
-
-/* Responsive Table Styling */
-@media (max-width: 768px) {
-  table {
-      display: block;
-      overflow-x: auto;
-      white-space: normal;
-  }
-
-  th, td {
-      display: table-cell;
-      padding: 8px;
-  }
-
-  th:last-child, td:last-child {
-      min-width: 120px;
-  }
-}
-
-/* ==========================================================================
- 10. Input and Select Styles
- ========================================================================== */
-
-input[type="text"], input[type="email"], input[type="password"], input[type="date"], textarea, select {
-  width: calc(100% - 22px);
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease;
-  background-color: var(--surface-color);
-  color: var(--text-color);
-}
-
-input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="date"]:focus, textarea:focus, select:focus {
-  border-color: var(--primary-color);
-  outline: none;
-}
-
-select {
-  padding: 8px 12px;
-  cursor: pointer;
-}
-
-/* ==========================================================================
- 11. Dark Mode Toggle
- ========================================================================== */
-
-#dark-mode-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: white;
-  font-size: 1.2em;
-}
-
-/* ==========================================================================
- 12. Account Page Styles
- ========================================================================== */
-
-.account-container {
-  width: 90%;
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: var(--surface-color);
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.account-container h1 {
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
+.text-center {
   text-align: center;
 }
 
 .account-grid {
-  display: grid;
-  grid-template-columns: 1fr; /* Single column by default (for mobile) */
-  gap: 1rem;
-}
-
-@media (min-width: 600px) { /* Adjust breakpoint as needed */
-  .account-grid {
-      grid-template-columns: 1fr 1fr; /* Two columns on larger screens */
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
 }
 
 .account-item {
   padding: 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.75rem;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .account-item strong {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+  min-width: 150px;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
-/* ==========================================================================
- 12. Details Page Styles
- ========================================================================== */
+.account-item span {
+  color: var(--text-primary);
+  font-weight: 500;
+}
 
-/* Request Details Grid */
-.details-grid {
+.mono-text {
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.3rem;
+  color: var(--accent-secondary) !important;
+}
+
+/* --- Admin Dashboard --- */
+.stats-container {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Two columns */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
-.details-grid div {
-  padding: 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  background-color: var(--surface-color);
-}
-
-.details-grid strong {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 0.5rem;
-  color: var(--text-color);
-}
-
-/* Details Buttons */
-.details-buttons {
-  display: flex;
-  justify-content: center; /* Center the buttons */
-  gap: 1rem;
-}
-
-/* Updated Button Styling (Using existing cta-button) */
-.details-buttons .cta-button {
-  display: inline-block;
-  padding: 1rem 2rem;
-  background-color: var(--primary-color);
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  border: none;
-  cursor: pointer;
-}
-
-.details-buttons .cta-button:hover {
-  background-color: #0056b3;
-}
-
-
-
-
-
-.auth-container {
-  width: 90%;
-  max-width: 400px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: var(--surface-color);
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.stats-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 1rem;
+  padding: 1.5rem;
   text-align: center;
+  transition: all 0.3s ease;
 }
 
-.auth-form {
+.stats-box:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-primary);
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.3);
+}
+
+.stats-box h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mb-2 {
   margin-bottom: 2rem;
 }
 
-.auth-form h1, .auth-form h2 {
-  color: var(--primary-color);
-  margin-bottom: 1.5rem;
+/* Admin Table Tweaks */
+.styled-table td {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.form-group {
-  text-align: left;
-  margin-bottom: 1rem;
+.styled-table td:last-child {
+  white-space: normal;
+  overflow: visible;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  color: var(--text-color);
+/* --- Admin Request Details --- */
+.full-width {
+  width: 100%;
+  flex-basis: 100%;
 }
 
-.form-group input[type="email"],
-.form-group input[type="password"] {
-  width: calc(100% - 12px);
-  padding: 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease;
-  background-color: var(--surface-color);
-  color: var(--text-color);
+.account-item.full-width {
+  /* Keep default row layout */
+  align-items: flex-start;
+  /* Aligns text to top if wrapping occurs */
 }
 
-.form-group input[type="email"]:focus,
-.form-group input[type="password"]:focus {
-  border-color: var(--primary-color);
+.glass-input {
+  width: 100%;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+select.glass-input {
+  padding-right: 2.5rem;
+  /* Make room for arrow */
+  appearance: none;
+  /* Remove default arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2338bdf8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 0.8rem auto;
+}
+
+.glass-input:focus {
   outline: none;
+  border-color: var(--accent-primary);
+  background-color: rgba(255, 255, 255, 0.1);
+  /* Slightly lighter on focus */
 }
 
-.cta-button {
-  display: inline-block;
-  padding: 1rem 2rem;
-  background-color: var(--primary-color);
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  border: none;
-  cursor: pointer;
-  margin-top: 1rem;
+.glass-input option {
+  background: #1e293b;
+  /* Fallback dark bg for options */
+  color: var(--text-primary);
 }
 
-.cta-button:hover {
-  background-color: #0056b3;
-}
-
-.error-message {
-  color: red;
-  margin-top: 10px;
-}
-
-.stats-container {
+.button-group {
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
-.stats-box {
-  border: 1px solid #ddd;
-  padding: 15px;
-  text-align: center;
-  width: 20%; /* Adjust as needed */
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+.cta-button.secondary {
+  background: transparent;
+  border: 1px solid var(--glass-border);
 }
 
-/* Media query for mobile devices */
-@media (max-width: 768px) { /* Adjust the breakpoint as needed */
-  .stats-container {
-      flex-direction: column; /* Stack boxes vertically */
-      align-items: center; /* Center the boxes horizontally */
+.cta-button.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--text-primary);
+}
+
+.admin-notes-list {
+  padding-left: 1.5rem;
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.admin-notes-list li {
+  margin-bottom: 0.5rem;
+}
+
+/* --- Toast Notifications --- */
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+
+.toast {
+  background: white;
+  color: #333;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+  min-width: 300px;
+  border-left: 5px solid;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
   }
 
-  .stats-box {
-      width: 80%; /* Make boxes wider on mobile */
-      margin-bottom: 10px; /* Add space between boxes */
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
+}
+
+.toast i {
+  font-size: 1.25rem;
+}
+
+.toast-success {
+  border-left-color: #22c55e;
+}
+
+.toast-success i {
+  color: #22c55e;
+}
+
+.toast-error {
+  border-left-color: #ef4444;
+}
+
+.toast-error i {
+  color: #ef4444;
+}
+
+.toast-warning {
+  border-left-color: #eab308;
+}
+
+.toast-warning i {
+  color: #eab308;
+}
+
+.toast-info {
+  border-left-color: #3b82f6;
+}
+
+.toast-info i {
+  color: #3b82f6;
+}
+
+.toast .close-btn {
+  margin-left: auto;
+  cursor: pointer;
+  color: #999;
+  font-weight: bold;
+}
+
+.toast .close-btn:hover {
+  color: #333;
 }
