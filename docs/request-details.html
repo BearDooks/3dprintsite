@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,30 +13,39 @@
     <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/functions.js"></script>
 </head>
+
 <body>
     <div id="navbar-container"></div>
-    <div class="main-content">
-        <h1>Request Details</h1>
-        <div id="request-details" class="details-grid">
+    <div class="main-content container">
+        <div class="glass-panel text-left">
+            <h1 class="text-center">Request Details</h1>
+            <div id="request-details" class="account-grid">
+                <!-- Details injected by JS -->
             </div>
-        <div class="details-buttons">
-            <button id="cancel-request" class="cta-button cancel-button">Cancel Request</button>
-            <button id="back-to-dashboard" class="cta-button">Back to Dashboard</button>
+            <div class="button-group" style="justify-content: center; margin-top: 2rem;">
+                <button id="cancel-request" class="cta-button"
+                    style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);">Cancel
+                    Request</button>
+                <button id="back-to-dashboard" class="cta-button secondary">Back to Dashboard</button>
+            </div>
         </div>
     </div>
 
-    <div id="confirmation-modal" class="modal cancel-modal"> <div class="modal-content">
+    <div id="confirmation-modal" class="modal">
         <div class="modal-content">
             <p>Are you sure you want to cancel this request?</p>
-            <button id="confirm-cancel" class="cta-button">Yes, Cancel</button>
-            <button id="cancel-modal" class="cta-button">No, Keep Request</button>
+            <button id="confirm-cancel" class="cta-button"
+                style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);">Yes,
+                Cancel</button>
+            <button id="cancel-modal" class="cta-button secondary">No, Keep Request</button>
         </div>
     </div>
 
     <script>
-        $(function() {
+        $(function () {
             $("#navbar-container").load("navbar.html");
         });
     </script>
 </body>
+
 </html>

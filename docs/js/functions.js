@@ -3,6 +3,7 @@ import { auth, db } from './firebase-config.js'; // Import auth and db
 $(document).ready(function () {
     const adminUID = "lk0SSxWRWKU1ST9faUiZcuDUDh62";
     authStateObserver();
+    checkCookieConsent();
 
     // Dropdown Toggle Logic
     $(document).on("click", ".dropbtn", function (e) {
@@ -262,41 +263,58 @@ export function showToast(message, type = 'success') {
     }, 4000);
 }
 
+export function formatStatus(status) {
+    let lowerStatus = (status || "").toLowerCase();
+    let statusClass = "status-pill";
+
+    if (lowerStatus === "submitted") {
+        statusClass += " status-submitted";
+    } else if (lowerStatus === "in progress") {
+        statusClass += " status-progress";
+    } else if (lowerStatus === "completed") {
+        statusClass += " status-completed";
+    } else if (lowerStatus === "cancelled") {
+        statusClass += " status-cancelled";
+    }
+
+    return `<span class="${statusClass}">${status || "Unknown"}</span>`;
+}
+
 export function displayRequestDetails(request, isAdmin = false, isUserDashboard = false) {
     const detailsDiv = $("#request-details");
     detailsDiv.empty();
 
     let detailsHTML = `
         <div class="account-item">
-            <strong>Request Name:</strong>
+            <strong><i class="fas fa-tag"></i> Request Name:</strong>
             <span>${request.requestName || "N/A"}</span>
         </div>
         <div class="account-item">
-            <strong>Request Link:</strong>
-            <span>${request.requestLink ? `<a href="${request.requestLink}" target="_blank" class="accent-link">View Link</a>` : "N/A"}</span>
+            <strong><i class="fas fa-link"></i> Request Link:</strong>
+            <span>${request.requestLink ? `<a href="${request.requestLink}" target="_blank" class="accent-link">View Link <i class="fas fa-external-link-alt"></i></a>` : "N/A"}</span>
         </div>
         <div class="account-item">
-            <strong>Request Notes:</strong>
+            <strong><i class="fas fa-align-left"></i> Request Notes:</strong>
             <span>${request.requestNotes || "N/A"}</span>
         </div>
         <div class="account-item">
-            <strong>Status:</strong>
-            <span>${request.status || "N/A"}</span>
+            <strong><i class="fas fa-info-circle"></i> Status:</strong>
+            ${formatStatus(request.status)}
         </div>
         <div class="account-item">
-            <strong>Date Added:</strong>
+            <strong><i class="far fa-calendar-alt"></i> Date Added:</strong>
             <span>${request.dateAdded ? request.dateAdded.toDate().toLocaleString() : "N/A"}</span>
         </div>
         <div class="account-item">
-            <strong>Request Date Needed:</strong>
+            <strong><i class="far fa-calendar-check"></i> Date Needed:</strong>
             <span>${request.requestDateNeeded || "N/A"}</span>
         </div>
         <div class="account-item">
-            <strong>User ID:</strong>
+            <strong><i class="fas fa-user-tag"></i> User ID:</strong>
             <span class="mono-text">${request.userId || "N/A"}</span>
         </div>
         <div class="account-item">
-            <strong>Request ID:</strong>
+            <strong><i class="fas fa-fingerprint"></i> Request ID:</strong>
             <span class="mono-text">${request.id || "N/A"}</span>
         </div>
     `;
@@ -310,13 +328,12 @@ export function displayRequestDetails(request, isAdmin = false, isUserDashboard 
         adminNotesList += "</ul>";
         detailsHTML += `
             <div class="account-item full-width">
-                <strong>Admin Notes:</strong>
+                <strong><i class="fas fa-clipboard-list"></i> Admin Notes:</strong>
                 <div>${adminNotesList}</div>
             </div>
         `;
-    } detailsDiv.append(detailsHTML);
-    $("#request-details div:contains('Admin Notes:')").css('text-align', 'left');
-    $("#request-details div:contains('Admin Notes:') ul").css('padding-left', '20px');
+    }
+    detailsDiv.append(detailsHTML);
 }
 
 export function authStateObserver() {
@@ -368,3 +385,47 @@ function handleCancelRequest(requestId) {
         console.error("Error getting request:", error);
     });
 }
+
+function checkCookieConsent() {
+    if (!localStorage.getItem('cookieConsent')) {
+        // Create banner HTML
+        const bannerHTML = `
+            <div id="cookie-banner" class="cookie-banner">
+                <p>We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.</p>
+                <div class="cookie-buttons">
+                    <button id="accept-cookies" class="cta-button small">Accept</button>
+                    <button id="reject-cookies" class="cta-button secondary small">Reject</button>
+                </div>
+            </div>
+        `;
+
+        $("body").append(bannerHTML);
+
+        // Trigger animation
+        setTimeout(() => {
+            $("#cookie-banner").addClass("show");
+        }, 100);
+
+        // Handle clicks
+        $("#accept-cookies").click(function () {
+            localStorage.setItem('cookieConsent', 'accepted');
+            dismissBanner();
+        });
+
+        $("#reject-cookies").click(function () {
+            localStorage.setItem('cookieConsent', 'rejected');
+            dismissBanner();
+        });
+
+        function dismissBanner() {
+            $("#cookie-banner").removeClass("show");
+            setTimeout(() => {
+                $("#cookie-banner").remove();
+            }, 500);
+        }
+    }
+}
+
+// Call on ready (since this calls from module, we can export it or just call it if we move it up,
+// but since functions.js is imported as module, we can just run it or export it and call in main.
+// Actually, functions.js has a $(document).ready block at the top. I should add the call there.)

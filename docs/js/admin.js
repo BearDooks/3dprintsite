@@ -1,5 +1,5 @@
 import { auth, db } from './firebase-config.js';
-import { displayRequestDetails, showToast } from './functions.js';
+import { displayRequestDetails, showToast, formatStatus } from './functions.js';
 
 $(document).ready(function () {
     const adminUID = "lk0SSxWRWKU1ST9faUiZcuDUDh62";
@@ -7,6 +7,7 @@ $(document).ready(function () {
     let adminCurrentPage = 1;
     let adminItemsPerPage = 10;
     let adminAllRequests = [];
+    let currentFilteredRequests = [];
     let totalDocuments = 0;
 
     let authStateChecked = false;
@@ -81,6 +82,24 @@ $(document).ready(function () {
     });
 
     function fetchAllRequests() {
+        // Show Skeletons
+        const tableBody = $("#admin-requests-table tbody");
+        tableBody.empty();
+        for (let i = 0; i < 5; i++) {
+            tableBody.append(`
+                <tr class="skeleton-row">
+                    <td><div class="skeleton"></div></td>
+                    <td><div class="skeleton"></div></td>
+                    <td><div class="skeleton"></div></td>
+                    <td><div class="skeleton"></div></td>
+                    <td><div class="skeleton"></div></td>
+                    <td><div class="skeleton"></div></td>
+                    <td><div class="skeleton"></div></td>
+                    <td><div class="skeleton"></div></td>
+                </tr>
+            `);
+        }
+
         return new Promise((resolve, reject) => {
             db.collection("requests").get().then((querySnapshot) => {
                 adminAllRequests = [];
@@ -91,6 +110,7 @@ $(document).ready(function () {
                     data.id = doc.id;
                     adminAllRequests.push(data);
                 });
+                currentFilteredRequests = adminAllRequests;
                 resolve();
             }).catch((error) => {
                 console.error("Error fetching requests:", error);
@@ -102,7 +122,7 @@ $(document).ready(function () {
     function displayRequests() {
         const startIndex = (adminCurrentPage - 1) * adminItemsPerPage;
         const endIndex = startIndex + parseInt(adminItemsPerPage);
-        const pageRequests = adminAllRequests.slice(startIndex, endIndex);
+        const pageRequests = currentFilteredRequests.slice(startIndex, endIndex);
 
         populateRequestsTable(pageRequests);
         updatePaginationInfo();
@@ -114,18 +134,31 @@ $(document).ready(function () {
         const tableBody = $("#admin-requests-table tbody");
         tableBody.empty();
 
+        if (requests.length === 0) {
+            tableBody.append(`
+               <tr>
+                   <td colspan="8">
+                       <div class="empty-state">
+                           <i class="fas fa-inbox"></i>
+                           <p>No requests found.</p>
+                       </div>
+                   </td>
+               </tr>
+           `);
+            return;
+        }
+
         requests.forEach((request) => {
             const row = `
-                <tr>
-                    <td>${request.requestName || ""}</td>
-                    <td>${request.requestLink || ""}</td>
-                    <td>${request.requestNotes || ""}</td>
-                    <td>${request.status || ""}</td>
-                    <td>${request.dateAdded ? request.dateAdded.toDate().toLocaleString() : ""}</td>
-                    <td>${request.adminNotes || ""}</td>
-                    <td>${request.requestDateNeeded || ""}</td>
-                    <td><span class="mono-text">${request.userId || ""}</span></td>
-                    <td><a href="admin-request-details.html?id=${request.id}" class="view-details-btn">View Details</a></td>
+                <tr onclick="window.location.href='admin-request-details.html?id=${request.id}'">
+                    <td data-label="Request Name">${request.requestName || ""}</td>
+                    <td data-label="Request Link">${request.requestLink || ""}</td>
+                    <td data-label="Request Notes">${request.requestNotes || ""}</td>
+                    <td data-label="Status">${formatStatus(request.status)}</td>
+                    <td data-label="Date Added">${request.dateAdded ? request.dateAdded.toDate().toLocaleString() : ""}</td>
+                    <td data-label="Date Needed">${request.requestDateNeeded || ""}</td>
+                    <td data-label="User ID"><span class="mono-text">${request.userId || ""}</span></td>
+                    <td data-label="Action"><button class="cta-button secondary small">View</button></td>
                 </tr>
             `;
             tableBody.append(row);
@@ -133,12 +166,12 @@ $(document).ready(function () {
     }
 
     function updatePaginationInfo() {
-        const totalPages = Math.ceil(totalDocuments / adminItemsPerPage);
+        const totalPages = Math.ceil(currentFilteredRequests.length / adminItemsPerPage) || 1;
         $("#adminPageInfo").text(`Page ${adminCurrentPage} of ${totalPages}`);
     }
 
     function updatePaginationButtons() {
-        const totalPages = Math.ceil(totalDocuments / adminItemsPerPage);
+        const totalPages = Math.ceil(currentFilteredRequests.length / adminItemsPerPage) || 1;
         $("#adminPrevPage").prop("disabled", adminCurrentPage === 1);
         $("#adminNextPage").prop("disabled", adminCurrentPage === totalPages);
     }
@@ -151,7 +184,7 @@ $(document).ready(function () {
     });
 
     $("#adminNextPage").click(() => {
-        const totalPages = Math.ceil(totalDocuments / adminItemsPerPage);
+        const totalPages = Math.ceil(currentFilteredRequests.length / adminItemsPerPage) || 1;
         if (adminCurrentPage < totalPages) {
             adminCurrentPage++;
             displayRequests();
@@ -183,6 +216,24 @@ $(document).ready(function () {
 
     initializePerPageButtons();
 
+    // --- Search Functionality ---
+    $("#searchInput").on("keyup", function () {
+        const value = $(this).val().toLowerCase();
+
+        currentFilteredRequests = adminAllRequests.filter(request => {
+            const name = (request.requestName || "").toLowerCase();
+            const status = (request.status || "").toLowerCase();
+            const notes = (request.requestNotes || "").toLowerCase();
+            const user = (request.userId || "").toLowerCase();
+            return name.includes(value) || status.includes(value) || notes.includes(value) || user.includes(value);
+        });
+
+        adminCurrentPage = 1;
+        displayRequests();
+    });
+
+    let statusChartInstance = null;
+
     function calculateAndDisplayStats() {
         let submittedCount = 0;
         let inProgressCount = 0;
@@ -210,5 +261,44 @@ $(document).ready(function () {
         $("#in-progress-count").text(inProgressCount);
         $("#completed-count").text(completedCount);
         $("#cancelled-count").text(cancelledCount);
+
+        // Render Chart
+        const ctx = document.getElementById('statusChart').getContext('2d');
+
+        if (statusChartInstance) {
+            statusChartInstance.destroy();
+        }
+
+        statusChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Submitted', 'In Progress', 'Completed', 'Cancelled'],
+                datasets: [{
+                    data: [submittedCount, inProgressCount, completedCount, cancelledCount],
+                    backgroundColor: [
+                        '#3b82f6', // Blue
+                        '#eab308', // Yellow
+                        '#22c55e', // Green
+                        '#ef4444'  // Red
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#e2e8f0', // Text primary
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 });

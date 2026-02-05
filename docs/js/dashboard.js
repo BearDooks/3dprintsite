@@ -1,11 +1,12 @@
 import { auth, db } from './firebase-config.js';
-import { showToast } from './functions.js';
+import { showToast, formatStatus } from './functions.js';
 
 $(document).ready(function () {
     // --- 1. State Variables ---
     let userCurrentPage = 1;
     let userItemsPerPage = 10;
     let userAllRequests = [];
+    let currentFilteredRequests = [];
 
     // --- 2. Modal Handling ---
     const modal = $("#new-request-modal");
@@ -29,8 +30,35 @@ $(document).ready(function () {
     };
 
     // --- 3. Form Submission ---
+
+    // Validation Logic
+    const formInputs = $("#new-request-form input[required], #new-request-form textarea[required]");
+
+    formInputs.on('blur input', function () {
+        if ($(this).val().trim() !== "") {
+            $(this).addClass("valid").removeClass("invalid");
+        } else {
+            $(this).addClass("invalid").removeClass("valid");
+        }
+    });
+
     $("#new-request-form").submit(function (event) {
         event.preventDefault();
+
+        // Final check
+        let isValid = true;
+        formInputs.each(function () {
+            if ($(this).val().trim() === "") {
+                $(this).addClass("invalid");
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            showToast("Please fill in all required fields.", "error");
+            return;
+        }
+
         submitNewRequest();
     });
 
@@ -76,6 +104,21 @@ $(document).ready(function () {
 
     // --- 4. Data Fetching and Display ---
     function fetchUserRequests(userId) {
+        // Show Skeletons
+        const tableBody = $("#requests-table tbody");
+        tableBody.empty();
+        for (let i = 0; i < 5; i++) {
+            tableBody.append(`
+                <tr class="skeleton-row">
+                    <td><div class="skeleton"></div></td>
+                    <td><div class="skeleton"></div></td>
+                    <td><div class="skeleton"></div></td>
+                    <td><div class="skeleton"></div></td>
+                    <td><div class="skeleton"></div></td>
+                </tr>
+            `);
+        }
+
         db.collection("requests")
             .where("userId", "==", userId)
             .get()
@@ -86,6 +129,7 @@ $(document).ready(function () {
                     data.id = doc.id;
                     userAllRequests.push(data);
                 });
+                currentFilteredRequests = userAllRequests; // Initialize filtered list
                 displayUserRequests();
             })
             .catch((error) => {
@@ -96,7 +140,7 @@ $(document).ready(function () {
     function displayUserRequests() {
         const startIndex = (userCurrentPage - 1) * userItemsPerPage;
         const endIndex = startIndex + parseInt(userItemsPerPage);
-        const pageRequests = userAllRequests.slice(startIndex, endIndex);
+        const pageRequests = currentFilteredRequests.slice(startIndex, endIndex);
 
         populateRequestsTable(pageRequests);
         updatePaginationInfo();
@@ -107,14 +151,33 @@ $(document).ready(function () {
         const tableBody = $("#requests-table tbody");
         tableBody.empty();
 
+        if (requests.length === 0) {
+            // Check if empty state already exists to avoid duplication if called multiple times, or just clear and append.
+            // Since we empty tbody, we can't put div inside tbody easily that spans.
+            // Better to hide table and show div.
+            // But existing structure is `table -> tbody`.
+            // I will put a single row with colspan.
+            tableBody.append(`
+               <tr>
+                   <td colspan="5">
+                       <div class="empty-state">
+                           <i class="fas fa-inbox"></i>
+                           <p>No requests found. Start by creating one!</p>
+                       </div>
+                   </td>
+               </tr>
+           `);
+            return;
+        }
+
         requests.forEach((request) => {
             const row = `
-                <tr>
-                    <td>${request.requestName || ""}</td>
-                    <td>${request.status || ""}</td>
-                    <td>${request.dateAdded ? request.dateAdded.toDate().toLocaleString() : ""}</td>
-                    <td>${request.requestDateNeeded || ""}</td>
-                    <td><a href="request-details.html?id=${request.id}" class="view-details-btn">View Details</a></td>
+                <tr onclick="window.location.href='request-details.html?id=${request.id}'">
+                    <td data-label="Request Name">${request.requestName || ""}</td>
+                    <td data-label="Status">${formatStatus(request.status)}</td>
+                    <td data-label="Date Added">${request.dateAdded ? request.dateAdded.toDate().toLocaleString() : ""}</td>
+                    <td data-label="Date Needed">${request.requestDateNeeded || ""}</td>
+                    <td data-label="Action"><button class="cta-button secondary small">View</button></td>
                 </tr>
             `;
             tableBody.append(row);
@@ -123,12 +186,12 @@ $(document).ready(function () {
 
     // --- 5. Pagination ---
     function updatePaginationInfo() {
-        const totalPages = Math.ceil(userAllRequests.length / userItemsPerPage);
+        const totalPages = Math.ceil(currentFilteredRequests.length / userItemsPerPage) || 1;
         $("#userPageInfo").text(`Page ${userCurrentPage} of ${totalPages}`);
     }
 
     function updatePaginationButtons() {
-        const totalPages = Math.ceil(userAllRequests.length / userItemsPerPage);
+        const totalPages = Math.ceil(currentFilteredRequests.length / userItemsPerPage) || 1;
         $("#userPrevPage").prop("disabled", userCurrentPage === 1);
         $("#userNextPage").prop("disabled", userCurrentPage === totalPages);
     }
@@ -141,7 +204,7 @@ $(document).ready(function () {
     });
 
     $("#userNextPage").click(() => {
-        const totalPages = Math.ceil(userAllRequests.length / userItemsPerPage);
+        const totalPages = Math.ceil(currentFilteredRequests.length / userItemsPerPage) || 1;
         if (userCurrentPage < totalPages) {
             userCurrentPage++;
             displayUserRequests();
@@ -174,7 +237,19 @@ $(document).ready(function () {
 
     initializePerPageButtons();
 
-    // --- 8. Authentication State Change Listener ---
+    // --- 7. Search Functionality ---
+    $("#searchInput").on("keyup", function () {
+        const value = $(this).val().toLowerCase();
+
+        currentFilteredRequests = userAllRequests.filter(request => {
+            const name = (request.requestName || "").toLowerCase();
+            const status = (request.status || "").toLowerCase();
+            return name.includes(value) || status.includes(value);
+        });
+
+        userCurrentPage = 1;
+        displayUserRequests();
+    });
 
     // --- 8. Authentication State Change Listener ---
     auth.onAuthStateChanged(user => {

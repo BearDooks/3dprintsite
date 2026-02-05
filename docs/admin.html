@@ -13,6 +13,7 @@
     <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/functions.js"></script>
     <script type="module" src="js/admin.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -41,8 +42,18 @@
                 </div>
             </div>
 
+            <div class="chart-container"
+                style="position: relative; height:300px; width:100%; max-width: 600px; margin: 2rem auto;">
+                <canvas id="statusChart"></canvas>
+            </div>
+
             <div class="table-header">
                 <h2>All Requests</h2>
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" class="glass-input search-input"
+                        placeholder="Search by name, status, or user...">
+                </div>
                 <div class="table-controls">
                     <label for="adminItemsPerPage" style="margin-right: 10px; color: var(--text-secondary);">Items per
                         page:</label>
@@ -64,7 +75,6 @@
                             <th>Request Notes</th>
                             <th>Status</th>
                             <th>Date Added</th>
-                            <th>Admin Notes</th>
                             <th>Request Date Needed</th>
                             <th>User ID</th>
                             <th>Details</th>
